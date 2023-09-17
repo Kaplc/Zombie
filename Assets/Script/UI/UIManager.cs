@@ -45,17 +45,20 @@ public class UIManager
         {
             if (isFade)
             {
+                callBack += () =>
+                {
+                    GameObject.Destroy(panel.gameObject);
+                };
                 // 淡出
                 panel.Hide(callBack);
                 // 删除面板
                 panelsDic.Remove(panelName);
-                GameObject.Destroy(panel.gameObject, 2);
             }
             else
             {
-                // 删除面板
+                // 直接删除面板
                 panelsDic.Remove(panelName);
-                GameObject.Destroy(panel.gameObject, 2);
+                GameObject.Destroy(panel.gameObject);
             }
         }
     }
