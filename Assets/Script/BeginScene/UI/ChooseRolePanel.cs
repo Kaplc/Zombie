@@ -62,7 +62,7 @@ public class ChooseRolePanel : BasePanel
             else
             {
                 // 提示
-                // UIManager.Instance.Show<>()
+                UIManager.Instance.Show<TipsPanel>().UpdateTips("金钱不足");
             }
         });
         txMoney.text = DataManager.Instance.playerInfo.money.ToString();
