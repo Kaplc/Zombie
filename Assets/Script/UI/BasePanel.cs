@@ -58,13 +58,13 @@ public abstract class BasePanel : MonoBehaviour
         }
     }
 
-    public void Show()
+    public virtual void Show()
     {
         showFade = true;
         canvasGroup.alpha = 0;
     }
     
-    public void Hide(UnityAction callBack)
+    public virtual void Hide(UnityAction callBack)
     {
         hideFade = true;
         canvasGroup.alpha = 1;

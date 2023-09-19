@@ -1,0 +1,5 @@
+[
+  {"id":0,"path":"Prefabs/Role/0","unlockMoney":0},
+  {"id":1,"path":"Prefabs/Role/1","unlockMoney":100},
+  {"id":2,"path":"Prefabs/Role/2","unlockMoney":200}
+]
