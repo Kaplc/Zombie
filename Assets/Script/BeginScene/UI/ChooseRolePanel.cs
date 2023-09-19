@@ -21,7 +21,14 @@ public class ChooseRolePanel : BasePanel
         cameraAnimator = Camera.main.GetComponent<Animator>();
         
         // 初始化控件
-        btnStart.onClick.AddListener(() => { });
+        btnStart.onClick.AddListener(() =>
+        {
+            UIManager.Instance.Hide<ChooseRolePanel>(true, () =>
+            {
+                Destroy(role.gameObject);
+                UIManager.Instance.Show<ChooseMapPanel>();
+            });
+        });
         btnBack.onClick.AddListener(() =>
         {
             // 摄像机右转动画

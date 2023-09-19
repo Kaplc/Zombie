@@ -10,14 +10,17 @@ public class DataManager
     public MusicData musicData;
     public List<RoleInfo> roleInfos;
     public PlayerInfo playerInfo;
+    public List<MapInfo> mapInfos;
 
     public int nowRoleID = 0;
+    public int nowMapID = 0;
 
     private DataManager()
     {
         musicData = JsonManager.Instance.Load<MusicData>("musicData", E_JsonTool.LitJson);
         roleInfos = JsonManager.Instance.Load<List<RoleInfo>>("RoleInfos", E_JsonTool.LitJson);
         playerInfo = JsonManager.Instance.Load<PlayerInfo>("PlayerInfo", E_JsonTool.LitJson);
+        mapInfos = JsonManager.Instance.Load<List<MapInfo>>("MapInfos", E_JsonTool.LitJson);
     }
 
     public void SaveMusicData()
