@@ -83,9 +83,10 @@ public class ChooseRolePanel : BasePanel
     {
         // 启用开始按钮
         btnStart.gameObject.SetActive(true);
-        // 每次创建新对象删除旧对象
+        
         if (role)
         {
+            // 每次创建新对象删除旧对象
             Destroy(role.gameObject);
             btnUnlock.gameObject.SetActive(false);
         }

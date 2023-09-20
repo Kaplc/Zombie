@@ -35,8 +35,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 53.81, y: -192}
-  m_SizeDelta: {x: 107.15234, y: 175.58774}
+  m_AnchoredPosition: {x: 86.7, y: -192}
+  m_SizeDelta: {x: 173.01837, y: 175.58774}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &816474569381851380
 CanvasRenderer:
@@ -66,7 +66,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: be8affa9ba818554ebd338d49557006a, type: 3}
     m_FontSize: 60
     m_FontStyle: 0
     m_BestFit: 0
@@ -78,7 +78,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: $
+  m_Text: "\u91D1\u5E01:"
 --- !u!1 &1612171618329503616
 GameObject:
   m_ObjectHideFlags: 0
@@ -91,7 +91,7 @@ GameObject:
   - component: {fileID: 2889606888510489475}
   - component: {fileID: 4815794808749606506}
   m_Layer: 5
-  m_Name: Text
+  m_Name: TxNum
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -151,12 +151,12 @@ MonoBehaviour:
     m_MinSize: 1
     m_MaxSize: 108
     m_Alignment: 4
-    m_AlignByGeometry: 0
+    m_AlignByGeometry: 1
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 0
+  m_Text: "0\u91D1\u5E01"
 --- !u!1 &1689216331414723813
 GameObject:
   m_ObjectHideFlags: 0
@@ -1354,7 +1354,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 290.5, y: -87.794}
+  m_AnchoredPosition: {x: 373, y: -87.794}
   m_SizeDelta: {x: 366.8745, y: 175.5885}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1622302256536788390
@@ -1385,7 +1385,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: be8affa9ba818554ebd338d49557006a, type: 3}
     m_FontSize: 60
     m_FontStyle: 0
     m_BestFit: 1
