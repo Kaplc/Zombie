@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ChooseMapPanel : BasePanel
@@ -17,7 +18,11 @@ public class ChooseMapPanel : BasePanel
     {
         btnSure.onClick.AddListener(() =>
         {
-            
+            UIManager.Instance.Hide<ChooseMapPanel>(true, () =>
+            {
+                SceneManager.LoadScene("GameSceneCountrySide");
+                UIManager.Instance.Show<GamePanel>();
+            });
         });
         btnBack.onClick.AddListener(() =>
         {

@@ -19,7 +19,7 @@ public class ChooseRolePanel : BasePanel
     protected override void Init()
     {
         cameraAnimator = Camera.main.GetComponent<Animator>();
-        
+
         // 初始化控件
         btnStart.onClick.AddListener(() =>
         {
@@ -73,7 +73,7 @@ public class ChooseRolePanel : BasePanel
             }
         });
         txMoney.text = DataManager.Instance.playerInfo.money.ToString();
-        
+
         btnUnlock.gameObject.SetActive(false);
         // 初始化角色
         CreateRole();
@@ -83,7 +83,7 @@ public class ChooseRolePanel : BasePanel
     {
         // 启用开始按钮
         btnStart.gameObject.SetActive(true);
-        
+
         if (role)
         {
             // 每次创建新对象删除旧对象
@@ -98,11 +98,10 @@ public class ChooseRolePanel : BasePanel
         {
             // 未解锁显示解锁按钮
             btnUnlock.gameObject.SetActive(true);
-            btnUnlock.transform.Find("Text").GetComponent<Text>().text = "$" +
-                                                                         DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].unlockMoney;
+            btnUnlock.transform.Find("TxNum").GetComponent<Text>().text =
+                DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].unlockMoney + "金币";
             // 禁用开始按钮
             btnStart.gameObject.SetActive(false);
         }
     }
-    
 }

@@ -37,7 +37,7 @@ public class UIManager
         return newPanel;
     }
 
-    public void Hide<T>(bool isFade, UnityAction callBack) where T : BasePanel
+    public void Hide<T>(bool isFade = true, UnityAction callBack = null) where T : BasePanel
     {
         string panelName = typeof(T).Name;
 
