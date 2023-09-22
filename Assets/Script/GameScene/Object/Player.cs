@@ -6,6 +6,7 @@ using UnityEngine.PlayerLoop;
 
 public class Player : MonoBehaviour
 {
+    // 动作相关
     private Animator animator;
     public float moveSpeed;
 
@@ -18,6 +19,11 @@ public class Player : MonoBehaviour
 
     private bool isProne;
     private Coroutine proneCoroutine;
+
+    // 武器相关
+    private Weapon weapon;
+    public Transform handPos;
+
 
     private void Start()
     {
@@ -46,7 +52,7 @@ public class Player : MonoBehaviour
     {
         yDir = Input.GetAxis("Vertical");
         xDir = Input.GetAxis("Horizontal");
-        
+
         // 按下shift跑动
         if (Input.GetKey(KeyCode.LeftShift))
         {
@@ -73,9 +79,30 @@ public class Player : MonoBehaviour
             xDir = 0;
         }
 
+        Crouch();
+        Prone();
+
+        // 人物移动
+        animator.SetFloat("XSpeed", Mathf.Lerp(animator.GetFloat("XSpeed"), xDir, Time.deltaTime * moveSpeed));
+        animator.SetFloat("YSpeed", Mathf.Lerp(animator.GetFloat("YSpeed"), yDir, Time.deltaTime * moveSpeed));
+        // 镜头随人物旋转
+        transform.rotation *= Quaternion.Euler(transform.up * Input.GetAxis("Mouse X"));
+    }
+
+    #region 动作
+
+    private void Crouch()
+    {
         // 按下c蹲下
         if (Input.GetKeyDown(KeyCode.C))
         {
+            // 趴下时按蹲下强制起身
+            if (isProne)
+            {
+                isProne = !isProne;
+                animator.SetBool("Prone", isProne);
+            }
+            
             if (crouchCoroutine != null)
             {
                 StopCoroutine(crouchCoroutine);
@@ -84,9 +111,10 @@ public class Player : MonoBehaviour
             isCrouch = !isCrouch;
             crouchCoroutine = StartCoroutine(CrouchAnimation(isCrouch));
         }
+    }
 
-        #region 趴下
-
+    private void Prone()
+    {
         // 按下z趴下
         if (Input.GetKeyDown(KeyCode.Z))
         {
@@ -113,15 +141,9 @@ public class Player : MonoBehaviour
         {
             xDir = 0;
         }
-
-        #endregion
-        
-        // 人物移动
-        animator.SetFloat("XSpeed", Mathf.Lerp(animator.GetFloat("XSpeed"), xDir, Time.deltaTime * moveSpeed));
-        animator.SetFloat("YSpeed", Mathf.Lerp(animator.GetFloat("YSpeed"), yDir, Time.deltaTime * moveSpeed));
-        // 镜头随人物旋转
-        transform.rotation *= Quaternion.Euler(transform.up * Input.GetAxis("Mouse X"));
     }
+
+    #endregion
 
     #region 动作过度协程
 
@@ -157,6 +179,12 @@ public class Player : MonoBehaviour
 
     public void KnifeEvent()
     {
+        // 范围检测
+        Collider[] enemies = Physics.OverlapSphere(transform.forward, 0.5f, 1 << LayerMask.NameToLayer("Enemy"));
+        foreach (Collider enemy in enemies)
+        {
+            
+        }
     }
 
     #endregion
