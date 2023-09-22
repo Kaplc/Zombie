@@ -8,7 +8,6 @@ public class Player : MonoBehaviour
 {
     private Animator animator;
     public float moveSpeed;
-    public float crouchSpeed;
 
     // 轴向
     private float xDir;
@@ -33,18 +32,33 @@ public class Player : MonoBehaviour
 
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            // 按下shift跑步
-            yDir += 1;
+            // 按下shift跑动
+            if (yDir>0)
+            {
+                // 在后退时不能跑动
+                yDir += 1;
+            }
+
+            if (xDir>0)
+            {
+                xDir += 1;
+            }
+
+            if (xDir<0)
+            {
+                xDir -= 1;
+            }
         }
 
-        if (yDir <= 0)
+        if (yDir < 0)
         {
-            // 禁止s后退
-            yDir = 0;
+            // 禁止s后退时左右移动
+            xDir = 0;
         }
-
+        
         if (Input.GetKeyDown(KeyCode.C))
         {
+            // 按下c蹲下
             if (crouchCoroutine != null)
             {
                 StopCoroutine(crouchCoroutine);
@@ -53,10 +67,10 @@ public class Player : MonoBehaviour
             crouchCoroutine = StartCoroutine(CrouchAnimation(isCrouch));
         }
         
-
+        // 人物移动
         animator.SetFloat("XSpeed", Mathf.Lerp(animator.GetFloat("XSpeed"), xDir, Time.deltaTime * moveSpeed));
         animator.SetFloat("YSpeed", Mathf.Lerp(animator.GetFloat("YSpeed"), yDir, Time.deltaTime * moveSpeed));
-
+        // 镜头随人物旋转
         transform.rotation *= Quaternion.Euler(transform.up * Input.GetAxis("Mouse X"));
     }
 
