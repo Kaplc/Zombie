@@ -60135,7 +60135,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44502528b11543e48964a371dc102f54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animaSpeed: 10
+  moveSpeed: 10
+  crouchSpeed: 0
 --- !u!143 &1216626784
 CharacterController:
   m_ObjectHideFlags: 0
