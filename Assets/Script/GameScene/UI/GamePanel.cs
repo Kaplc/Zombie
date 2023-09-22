@@ -28,7 +28,7 @@ public class GamePanel : BasePanel
         totalTimes = 10;
         gameMoney = 200;
         
-        UpdateHp();
+        UpdateCoreHp(100,100);
         UpdateTimes();
         UpdateGameMoney(999);
         
@@ -48,9 +48,9 @@ public class GamePanel : BasePanel
         txTimes.text = nowTimes + "/" + totalTimes;
     }
     
-    public void UpdateHp()
+    public void UpdateCoreHp(float hp, float maxHp)
     {
-        ImgHp.sizeDelta = new Vector2(hp/100f * 600, 30);
+        ImgHp.sizeDelta = new Vector2(hp/maxHp * 600, 30);
         txHp.text = $"{hp}/100";
     }
 }
