@@ -21,10 +21,11 @@ public class Player : MonoBehaviour
     private Coroutine proneCoroutine;
 
     // 武器相关
+    private int weaponIndex;
     private Weapon weapon;
     public Transform handPos;
-    private int weaponIndex;
-
+    private Transform firePos;
+    
 
     private void Start()
     {
@@ -51,7 +52,7 @@ public class Player : MonoBehaviour
         animator.SetTrigger("Attack");
     }
 
-    #region 拿刀动作
+    #region 手枪和刀动作
 
     private void Move()
     {
@@ -108,7 +109,7 @@ public class Player : MonoBehaviour
         // 按x翻滚
         if (Input.GetKeyDown(KeyCode.X))
         {
-            ResetWeight();
+            Roll();
         }
 
         // 趴下禁止左右
@@ -146,6 +147,11 @@ public class Player : MonoBehaviour
         animator.SetBool("Prone", isProne);
     }
 
+    private void Roll()
+    {
+        animator.SetTrigger("Roll");
+    }
+    
     // 重置权重
     private void ResetWeight()
     {
