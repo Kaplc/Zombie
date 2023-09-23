@@ -25,7 +25,8 @@ public class Player : MonoBehaviour
     private Weapon weapon;
     public Transform handPos;
     private Transform firePos;
-    
+    private Dictionary<int, GameObject> weaponDic;
+
 
     private void Start()
     {
@@ -34,12 +35,15 @@ public class Player : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
+        weaponIndex = 3;
         ChangeWeapon();
     }
 
     private void Update()
     {
         Move();
+
+        GetKeyNumToChangeWeapon();
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -95,6 +99,7 @@ public class Player : MonoBehaviour
                 isProne = false; // 取消标记为趴下
                 animator.SetBool("Prone", false);
             }
+
             isCrouch = !isCrouch;
             Crouch();
         }
@@ -151,7 +156,7 @@ public class Player : MonoBehaviour
     {
         animator.SetTrigger("Roll");
     }
-    
+
     // 重置权重
     private void ResetWeight()
     {
@@ -159,9 +164,9 @@ public class Player : MonoBehaviour
         {
             StopCoroutine(crouchCoroutine);
         }
+
         isCrouch = false;
         crouchCoroutine = StartCoroutine(CrouchUpAnimation());
-
     }
 
     #endregion
@@ -212,30 +217,29 @@ public class Player : MonoBehaviour
 
     public void ShootEvent()
     {
-        
     }
 
     #endregion
 
     #region 换武器
 
-    private void GetKeyNum()
+    private void GetKeyNumToChangeWeapon()
     {
         // 数字键
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha1) && weaponIndex != 1)
         {
             // 主武器
             ChangeWeapon();
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (Input.GetKeyDown(KeyCode.Alpha2) && weaponIndex != 2)
         {
             // 副武器
             weaponIndex = 2;
             ChangeWeapon();
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        if (Input.GetKeyDown(KeyCode.Alpha3) && weaponIndex != 3)
         {
             // 近战武器
             weaponIndex = 3;
@@ -245,16 +249,22 @@ public class Player : MonoBehaviour
 
     private void ChangeWeapon()
     {
+        if (weapon != null)
+        {
+            Destroy(weapon.gameObject);
+        }
+
         switch (weaponIndex)
         {
             case 1:
                 break;
             case 2:
                 weapon = Instantiate(Resources.Load<Weapon>("Prefabs/Weapon/weapon_handgun"), handPos);
+                animator.runtimeAnimatorController = Instantiate(Resources.Load<RuntimeAnimatorController>("Animator/Role/HandGun"));
                 break;
             case 3:
                 weapon = Instantiate(Resources.Load<Weapon>("Prefabs/Weapon/weapon_knife"), handPos);
-                animator = Instantiate(Resources.Load<Animator>("Animator/Role/Knife"));
+                animator.runtimeAnimatorController = Instantiate(Resources.Load<RuntimeAnimatorController>("Animator/Role/Knife"));
                 break;
         }
     }
