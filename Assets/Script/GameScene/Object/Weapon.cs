@@ -5,7 +5,7 @@ using UnityEngine;
 public enum E_Weapon
 {
     Knife,
-    
+    HandGun
 }
 
 

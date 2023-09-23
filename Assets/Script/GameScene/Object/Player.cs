@@ -23,6 +23,7 @@ public class Player : MonoBehaviour
     // 武器相关
     private Weapon weapon;
     public Transform handPos;
+    private int weaponIndex;
 
 
     private void Start()
@@ -31,6 +32,8 @@ public class Player : MonoBehaviour
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+
+        ChangeWeapon();
     }
 
     private void Update()
@@ -47,6 +50,8 @@ public class Player : MonoBehaviour
     {
         animator.SetTrigger("Attack");
     }
+
+    #region 拿刀动作
 
     private void Move()
     {
@@ -79,8 +84,38 @@ public class Player : MonoBehaviour
             xDir = 0;
         }
 
-        Crouch();
-        Prone();
+        // 按下c蹲下
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            // 趴下时按c, 
+            if (isProne)
+            {
+                ResetWeight(); // 重置权重
+                isProne = false; // 取消标记为趴下
+                animator.SetBool("Prone", false);
+            }
+            isCrouch = !isCrouch;
+            Crouch();
+        }
+
+        // 按下z趴下
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            isProne = !isProne;
+            Prone();
+        }
+
+        // 按x翻滚
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            ResetWeight();
+        }
+
+        // 趴下禁止左右
+        if (isProne)
+        {
+            xDir = 0;
+        }
 
         // 人物移动
         animator.SetFloat("XSpeed", Mathf.Lerp(animator.GetFloat("XSpeed"), xDir, Time.deltaTime * moveSpeed));
@@ -89,59 +124,40 @@ public class Player : MonoBehaviour
         transform.rotation *= Quaternion.Euler(transform.up * Input.GetAxis("Mouse X"));
     }
 
-    #region 动作
-
     private void Crouch()
     {
-        // 按下c蹲下
-        if (Input.GetKeyDown(KeyCode.C))
+        // 趴下时按蹲下强制起身
+        if (crouchCoroutine != null)
         {
-            // 趴下时按蹲下强制起身
-            if (isProne)
-            {
-                isProne = !isProne;
-                animator.SetBool("Prone", isProne);
-            }
-            
-            if (crouchCoroutine != null)
-            {
-                StopCoroutine(crouchCoroutine);
-            }
-
-            isCrouch = !isCrouch;
-            crouchCoroutine = StartCoroutine(CrouchAnimation(isCrouch));
+            StopCoroutine(crouchCoroutine);
         }
+
+        if (isCrouch)
+            // true为蹲下
+            crouchCoroutine = StartCoroutine(CrouchDownAnimation());
+        else
+            crouchCoroutine = StartCoroutine(CrouchUpAnimation());
     }
 
     private void Prone()
     {
-        // 按下z趴下
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            // 当前状态非蹲下不用重置
-            if (animator.GetLayerWeight(animator.GetLayerIndex("Crouch")) > 0.1f)
-            {
-                // 重置蹲下分层权重
-                if (crouchCoroutine != null)
-                {
-                    StopCoroutine(crouchCoroutine);
-                }
-
-                isCrouch = !isCrouch;
-                crouchCoroutine = StartCoroutine(CrouchAnimation(isCrouch));
-            }
-
-            // 触发prone参数
-            isProne = !isProne;
-            animator.SetBool("Prone", isProne);
-        }
-
-        // 趴下禁止左右
-        if (isProne)
-        {
-            xDir = 0;
-        }
+        ResetWeight();
+        // 触发prone参数
+        animator.SetBool("Prone", isProne);
     }
+
+    // 重置权重
+    private void ResetWeight()
+    {
+        if (crouchCoroutine != null)
+        {
+            StopCoroutine(crouchCoroutine);
+        }
+        isCrouch = false;
+        crouchCoroutine = StartCoroutine(CrouchUpAnimation());
+
+    }
+
     #endregion
 
     #region 动作过度协程
@@ -151,24 +167,27 @@ public class Player : MonoBehaviour
     /// </summary>
     /// <param name="isCrouch"></param>
     /// <returns></returns>
-    private IEnumerator CrouchAnimation(bool isCrouch)
+    private IEnumerator CrouchDownAnimation()
     {
-        if (isCrouch)
+        while (animator.GetLayerWeight(1) < 1f)
         {
-            while (animator.GetLayerWeight(1) < 1f)
-            {
-                // 蹲下
-                animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 1, Time.deltaTime * moveSpeed));
-                yield return null;
-            }
+            // 蹲下
+            animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 1, Time.deltaTime * moveSpeed));
+            yield return null;
         }
-        else
+    }
+
+    /// <summary>
+    /// 蹲下后起身动画
+    /// </summary>
+    /// <param name="isCrouch"></param>
+    /// <returns></returns>
+    private IEnumerator CrouchUpAnimation()
+    {
+        while (animator.GetLayerWeight(1) > 0f)
         {
-            while (animator.GetLayerWeight(1) > 0f)
-            {
-                animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0, Time.deltaTime * moveSpeed));
-                yield return null;
-            }
+            animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0, Time.deltaTime * moveSpeed));
+            yield return null;
         }
     }
 
@@ -182,7 +201,55 @@ public class Player : MonoBehaviour
         Collider[] enemies = Physics.OverlapSphere(transform.forward, 0.5f, 1 << LayerMask.NameToLayer("Enemy"));
         foreach (Collider enemy in enemies)
         {
-            
+        }
+    }
+
+    public void ShootEvent()
+    {
+        
+    }
+
+    #endregion
+
+    #region 换武器
+
+    private void GetKeyNum()
+    {
+        // 数字键
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            // 主武器
+            ChangeWeapon();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            // 副武器
+            weaponIndex = 2;
+            ChangeWeapon();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            // 近战武器
+            weaponIndex = 3;
+            ChangeWeapon();
+        }
+    }
+
+    private void ChangeWeapon()
+    {
+        switch (weaponIndex)
+        {
+            case 1:
+                break;
+            case 2:
+                weapon = Instantiate(Resources.Load<Weapon>("Prefabs/Weapon/weapon_handgun"), handPos);
+                break;
+            case 3:
+                weapon = Instantiate(Resources.Load<Weapon>("Prefabs/Weapon/weapon_knife"), handPos);
+                animator = Instantiate(Resources.Load<Animator>("Animator/Role/Knife"));
+                break;
         }
     }
 
