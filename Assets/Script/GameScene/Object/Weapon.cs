@@ -12,6 +12,7 @@ public enum E_Weapon
 public class Weapon : MonoBehaviour
 {
     public E_Weapon type;
+    public Transform firePos;
     
     // Start is called before the first frame update
     void Start()

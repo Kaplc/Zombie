@@ -11,6 +11,7 @@ public class DataManager
     public List<RoleInfo> roleInfos;
     public PlayerInfo playerInfo;
     public List<MapInfo> mapInfos;
+    public List<ZombieInfo> zombieInfos;
 
     public int nowRoleID = 0;
     public int nowMapID = 0;
@@ -21,6 +22,7 @@ public class DataManager
         roleInfos = JsonManager.Instance.Load<List<RoleInfo>>("RoleInfos", E_JsonTool.LitJson);
         playerInfo = JsonManager.Instance.Load<PlayerInfo>("PlayerInfo", E_JsonTool.LitJson);
         mapInfos = JsonManager.Instance.Load<List<MapInfo>>("MapInfos", E_JsonTool.LitJson);
+        zombieInfos = JsonManager.Instance.Load<List<ZombieInfo>>("ZombieInfos", E_JsonTool.LitJson);
     }
 
     public void SaveMusicData()
