@@ -9,11 +9,15 @@ public class DataManager
     
     public MusicData musicData;
     public List<RoleInfo> roleInfos;
-    public PlayerInfo playerInfo;
     public List<MapInfo> mapInfos;
     public List<ZombieInfo> zombieInfos;
+    
+    public PlayerInfo playerInfo; // 玩家信息
+    
+    public RoleInfo roleInfo; // 当前选择的人物信息
+    public int nowRoleID = 0; // 当前选择的人物id
 
-    public int nowRoleID = 0;
+    public MapInfo mapInfo;
     public int nowMapID = 0;
 
     private DataManager()
@@ -33,5 +37,11 @@ public class DataManager
     public void SavePlayerInfo()
     {
         JsonManager.Instance.Save("PlayerInfo", playerInfo, E_JsonTool.LitJson);
+    }
+
+    public void RecordGameInfo()
+    {
+        roleInfo = roleInfos[nowRoleID];
+        mapInfo = mapInfos[nowMapID];
     }
 }

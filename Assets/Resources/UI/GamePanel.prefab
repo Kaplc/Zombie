@@ -363,7 +363,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u5269\u4F59\u6CE2\u6570"
+  m_Text: "\u5269\u4F59\u6570\u91CF"
 --- !u!1 &8358673992133537042
 GameObject:
   m_ObjectHideFlags: 0
@@ -1369,7 +1369,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u5B89\u5168\u533A\u8840\u91CF"
+  m_Text: "\u6838\u5FC3\u8840\u91CF"
 --- !u!1 &8358673993180189575
 GameObject:
   m_ObjectHideFlags: 0
@@ -1464,7 +1464,7 @@ MonoBehaviour:
   fadeSpeed: 3
   ImgHp: {fileID: 8358673991482128244}
   txHp: {fileID: 8358673993418540505}
-  txTimes: {fileID: 8358673993206653319}
+  txCount: {fileID: 8358673993206653319}
   txGameMoney: {fileID: 8358673993018366455}
   TowerPanel: {fileID: 8358673993087922154}
   towerBtns:
@@ -1548,7 +1548,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 10/10
+  m_Text: 100
 --- !u!1 &8358673993418540503
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,9 +15,12 @@ public class Zombie : MonoBehaviour
     private float hp;
     private float atkCd;
     private float atk;
+    private float speed;
 
     private float lastAtkTime;
     private float lastLockTarTime; // 锁敌时间
+
+    private Coroutine stopMoveCoroutine;
 
     private void Awake()
     {
@@ -32,36 +35,52 @@ public class Zombie : MonoBehaviour
     private void Start()
     {
         // 随机目标
-        if (Random.Range(1,101) > 50)
+        if (Random.Range(1, 101) > 50)
         {
-            target = GameSceneMain.Instance.player;
+            target = GameManger.Instance.player;
         }
         else
         {
-            target = GameSceneMain.Instance.core;
+            target = GameManger.Instance.core.transform;
         }
     }
 
     private void Update()
     {
-        // 距离更近进行攻击
-        if (Vector3.Distance(transform.position, target.position) < 5 && Time.time - lastAtkTime>= atkCd)
+        // 游戏结束僵尸行为停止
+        if (GameManger.Instance.isGameOver)
         {
-            lastAtkTime = Time.time;
-            Attack();
+            animator.SetBool("Walk", false);
+            agent.isStopped = true;
+            return;
         }
         
-        // 3秒重新索敌
-        if (Vector3.Distance(transform.position, target.position) > 5 && Time.time - lastLockTarTime >= 3)
+        // 距离更近进行攻击
+        if (Vector3.Distance(transform.position, target.position) <= 4f)
         {
-            
+            // 到攻击距离停止移动动画
+            animator.SetBool("Walk", false);
+
+            // 满足攻击cd才攻击
+            if (Time.time - lastAtkTime >= atkCd)
+            {
+                lastAtkTime = Time.time;
+                Attack();
+            }
+        }
+
+        // 已经可以移动时, 3秒重新索敌
+        if (Vector3.Distance(transform.position, target.position) > 3 && Time.time - lastLockTarTime >= 2 && animator.GetBool("Walk"))
+        {
             lastLockTarTime = Time.time;
+            // 重新启动移动动画
+            animator.SetBool("Walk", true);
             agent.SetDestination(target.position);
         }
-        
-        if (hp>0)
+
+        if (hp > 0)
         {
-            transform.LookAt(target); 
+            transform.LookAt(target);
         }
     }
 
@@ -69,31 +88,28 @@ public class Zombie : MonoBehaviour
     {
         // 添加状态机
         animator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>(info.animatorPath);
-        
+
         hp = info.hp;
         atk = info.atk;
         atkCd = info.atkCd;
-        
+
         // 设置停止导航距离
         agent.stoppingDistance = 3;
         // 设置速度
         agent.speed = info.speed;
+        speed = info.speed;
         agent.angularSpeed = info.rotaSpeed;
-        
-        // 等待几秒后开始移动
-        Invoke("Move", 3);
     }
 
     private void Move()
     {
         // 移动动画
         animator.SetBool("Walk", true);
-        
+
         // 设置目标
         agent.SetDestination(target.position);
-        
     }
-    
+
     public void Wound(float atk)
     {
         hp -= atk;
@@ -115,6 +131,10 @@ public class Zombie : MonoBehaviour
         agent.isStopped = true;
         // 死亡动画
         animator.SetBool("Dead", true);
+        // 减少数量
+        GameManger.Instance.SubCount();
+        // 按照攻击能力加钱
+        GameManger.Instance.AddMoney((int)atkCd);
         Destroy(gameObject, 5);
     }
 
@@ -123,17 +143,36 @@ public class Zombie : MonoBehaviour
         // 攻击动画
         animator.SetTrigger("Attack");
     }
-    
+
+    #region 动作事件函数
+
     public void AtkEvent()
     {
-        // 前面+向上一个单位进行范围检测
-        Collider[] colliders = Physics.OverlapSphere(transform.position + transform.forward + transform.up, 1, 1 << LayerMask.NameToLayer("Core"));
-        // colliders[0].GetComponent<Core>().Wound(atk);
+        // 前面+向上一个单位进行范围检测, 根据目标判断层级
+
+        // 根据
+        if (target == GameManger.Instance.player)
+        {
+            Collider[] colliders = Physics.OverlapSphere(transform.position + transform.forward + transform.up, 2, 1 << LayerMask.NameToLayer("Player"));
+            // 不为0必定攻击到目标
+            if (colliders.Length != 0)
+            {
+                target.GetComponent<Player>().Wound(atk);
+            }
+        }
+        else
+        {
+            Collider[] colliders = Physics.OverlapSphere(transform.position + transform.forward + transform.up, 2, 1 << LayerMask.NameToLayer("Core"));
+            if (colliders.Length != 0)
+            {
+                target.GetComponent<Core>().Wound(atk);
+            }
+        }
+            
     }
 
     public void DeadEvent()
     {
-        
     }
 
     public void StartDamageEvent()
@@ -147,4 +186,11 @@ public class Zombie : MonoBehaviour
         // 结束受伤继续
         agent.isStopped = false;
     }
+
+    public void EndIdleEvent()
+    {
+        Move();
+    }
+
+    #endregion
 }

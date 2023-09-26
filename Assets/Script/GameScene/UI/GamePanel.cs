@@ -8,49 +8,33 @@ public class GamePanel : BasePanel
 {
     public RectTransform ImgHp;
     public Text txHp;
-    public Text txTimes;
+    public Text txCount;
     public Text txGameMoney;
 
     public Transform TowerPanel;
     public List<TowerBtn> towerBtns;
 
-    private int hp;
-    private int nowTimes;
-    private int totalTimes;
-    private int gameMoney;
-    
     protected override void Init()
     {
-        txGameMoney.text = 100.ToString(); // 默认游戏内金钱为100
-
-        hp = 60;
-        nowTimes = 1;
-        totalTimes = 10;
-        gameMoney = 200;
-        
-        UpdateCoreHp(100,100);
-        UpdateTimes();
-        UpdateGameMoney(999);
-        
         // 初始化建塔面板
         
         // 开始隐藏建塔面板
         TowerPanel.gameObject.SetActive(false);
     }
-
-    public void UpdateGameMoney(int num)
+    
+    public void AddGameMoney(int num)
     {
-        txGameMoney.text = (gameMoney + num).ToString();
+        txGameMoney.text = num.ToString();
     }
 
-    public void UpdateTimes()
+    public void UpdateCount(int count)
     {
-        txTimes.text = nowTimes + "/" + totalTimes;
+        txCount.text = count.ToString();
     }
     
     public void UpdateCoreHp(float hp, float maxHp)
     {
         ImgHp.sizeDelta = new Vector2(hp/maxHp * 600, 30);
-        txHp.text = $"{hp}/100";
+        txHp.text = $"{hp}/{maxHp}";
     }
 }

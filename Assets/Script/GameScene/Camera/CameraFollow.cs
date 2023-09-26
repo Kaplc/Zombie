@@ -17,6 +17,7 @@ public class CameraFollow : MonoBehaviour
     {
         // 镜头随鼠标上下移动
         lookAtY += Input.GetAxis("Mouse Y") * Time.deltaTime;
+        
         // 限制上下移动的范围
         lookAtY = Mathf.Clamp(lookAtY, 1, 3);
     }
@@ -30,7 +31,6 @@ public class CameraFollow : MonoBehaviour
         cameraPos += playerTransform.right * offSet.x;
         // 跟随
         transform.position = Vector3.Lerp(transform.position, cameraPos, Time.deltaTime * followSpeed);
-
         // 看向
         lookAtPos = playerTransform.position + Vector3.up * lookAtY;
         transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.LookRotation(lookAtPos - transform.position), Time.deltaTime * 50); 

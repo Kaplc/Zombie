@@ -36,8 +36,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -121.4624, y: -316}
-  m_SizeDelta: {x: 244.84143, y: 117.23274}
+  m_AnchoredPosition: {x: -100.99, y: -316}
+  m_SizeDelta: {x: 285.78418, y: 117.23274}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &361013049313549652
 CanvasRenderer:
@@ -310,7 +310,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -0.000030518, y: 0.000024018}
-  m_SizeDelta: {x: 324.50275, y: 111.97471}
+  m_SizeDelta: {x: 800, y: 111.97471}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8723954344309516295
 CanvasRenderer:
@@ -346,13 +346,13 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 111
-    m_Alignment: 0
+    m_Alignment: 1
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Zombie
+  m_Text: Zombie Tide
 --- !u!1 &8723954344428662140
 GameObject:
   m_ObjectHideFlags: 0
@@ -564,8 +564,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -179, y: 129}
-  m_SizeDelta: {x: 359.91638, y: 117.23274}
+  m_AnchoredPosition: {x: -158.53, y: 129}
+  m_SizeDelta: {x: 400.8534, y: 117.23274}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8723954345074470300
 CanvasRenderer:
@@ -684,8 +684,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -148.41174, y: -17}
-  m_SizeDelta: {x: 298.73877, y: 117.23274}
+  m_AnchoredPosition: {x: -127.94, y: -17}
+  m_SizeDelta: {x: 339.67773, y: 117.23274}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8723954345142466248
 CanvasRenderer:
@@ -803,8 +803,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -121.46246, y: -166}
-  m_SizeDelta: {x: 244.84143, y: 117.23274}
+  m_AnchoredPosition: {x: -100.99, y: -166}
+  m_SizeDelta: {x: 285.7821, y: 117.23274}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8723954345195634862
 CanvasRenderer:
@@ -921,8 +921,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.95843506, y: -173}
-  m_SizeDelta: {x: 0, y: 145.00531}
+  m_AnchoredPosition: {x: 13.900024, y: -173}
+  m_SizeDelta: {x: 55.99048, y: 145.00531}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8723954345344321578
 CanvasRenderer:

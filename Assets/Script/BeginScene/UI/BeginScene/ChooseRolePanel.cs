@@ -26,6 +26,7 @@ public class ChooseRolePanel : BasePanel
             UIManager.Instance.Hide<ChooseRolePanel>(true, () =>
             {
                 Destroy(role.gameObject);
+                DataManager.Instance.RecordGameInfo();
                 UIManager.Instance.Show<ChooseMapPanel>();
             });
         });
@@ -93,7 +94,10 @@ public class ChooseRolePanel : BasePanel
 
         role = Instantiate(Resources.Load<GameObject>(DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].path),
             Main.Instance.showRolePos);
-
+        
+        // 失活角色脚本防止交互
+        role.GetComponent<Player>().enabled = false;
+        
         if (!DataManager.Instance.playerInfo.unlockRoles.Contains(DataManager.Instance.nowRoleID))
         {
             // 未解锁显示解锁按钮

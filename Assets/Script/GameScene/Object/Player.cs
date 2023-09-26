@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
@@ -44,7 +43,7 @@ public class Player : MonoBehaviour
     private void Update()
     {
         Move();
-
+        
         GetKeyNumToChangeWeapon();
 
         if (Input.GetMouseButtonDown(0))
@@ -58,6 +57,11 @@ public class Player : MonoBehaviour
         animator.SetTrigger("Attack");
     }
 
+    public void Wound(float num)
+    {
+        print("玩家受伤");
+    }
+
     #region 手枪和刀动作
 
     private void Move()
@@ -69,15 +73,9 @@ public class Player : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftShift))
         {
             // 在后退时不能跑动
-            if (yDir > 0)
-                yDir += 1;
-
-
-            if (xDir > 0)
-                xDir += 1;
-            
-            if (xDir < 0)
-                xDir -= 1;
+            if (yDir > 0) yDir += 1;
+            if (xDir > 0) xDir += 1;
+            if (xDir < 0) xDir -= 1;
         }
 
         // s后退时左右移动
@@ -316,6 +314,6 @@ public class Player : MonoBehaviour
                 break;
         }
     }
-
+    
     #endregion
 }
