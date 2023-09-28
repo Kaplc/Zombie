@@ -15,6 +15,11 @@ public class CameraFollow : MonoBehaviour
 
     private void Update()
     {
+        if (GameManger.Instance.showMenu)
+        {
+            return;
+        }
+        
         // 镜头随鼠标上下移动
         lookAtY += Input.GetAxis("Mouse Y") * Time.deltaTime;
         

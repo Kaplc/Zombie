@@ -23,6 +23,8 @@ public class GameManger: MonoBehaviour
     private bool zombieTide;
 
     private AudioClip acZombieTide;
+
+    public bool showMenu;
     
     private void Awake()
     {
@@ -34,9 +36,11 @@ public class GameManger: MonoBehaviour
         Camera.main.GetComponent<CameraFollow>().playerTransform = player;
         // 创建BGM
         bgm = new GameObject("BGM").AddComponent<AudioSource>();
+        bgm.gameObject.AddComponent<BGMControl>();
         bgm.clip = Resources.Load<AudioClip>("Music/BGM");
         bgm.Play();
         bgm.loop = true;
+        // 提前加载音乐文件
         acZombieTide = Resources.Load<AudioClip>("Music/尸潮来袭");
     }
 
@@ -50,6 +54,32 @@ public class GameManger: MonoBehaviour
         UIManager.Instance.GetPanel<GamePanel>().UpdateGameMoney(money);
     }
 
+    private void Update()
+    {
+        // esc打开菜单
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            showMenu = !showMenu;
+            
+            // 按一下打开
+            if (showMenu)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                UIManager.Instance.Show<MenuPanel>();
+            }
+            else // 第二下关闭
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+                UIManager.Instance.Hide<MenuPanel>();
+                UIManager.Instance.Hide<ExitPanel>();
+                UIManager.Instance.Hide<SettingPanel>();
+            }
+            
+        }
+    }
+    
     public void AddOrSubMoney(int num)
     {
         money += num;

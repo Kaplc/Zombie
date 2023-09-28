@@ -42,11 +42,12 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        if (GameManger.Instance.isGameOver)
+        Move();
+        
+        if (GameManger.Instance.isGameOver || GameManger.Instance.showMenu)
         {
             return;
         }
-        Move();
         
         GetKeyNumToChangeWeapon();
 
@@ -126,12 +127,22 @@ public class Player : MonoBehaviour
         {
             xDir = 0;
         }
-
+        
+        // 游戏结束或者打开面板停止移动
+        if (GameManger.Instance.isGameOver || GameManger.Instance.showMenu)
+        {
+            xDir = 0;
+            yDir = 0;
+        }
+        else
+        {
+            // 镜头随人物旋转
+            transform.rotation *= Quaternion.Euler(transform.up * Input.GetAxis("Mouse X"));
+        }
+        
         // 人物移动
         animator.SetFloat("XSpeed", Mathf.Lerp(animator.GetFloat("XSpeed"), xDir, Time.deltaTime * moveSpeed));
         animator.SetFloat("YSpeed", Mathf.Lerp(animator.GetFloat("YSpeed"), yDir, Time.deltaTime * moveSpeed));
-        // 镜头随人物旋转
-        transform.rotation *= Quaternion.Euler(transform.up * Input.GetAxis("Mouse X"));
     }
 
     private void Crouch()
