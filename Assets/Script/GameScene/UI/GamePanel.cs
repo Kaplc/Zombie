@@ -10,6 +10,7 @@ public class GamePanel : BasePanel
     public Text txHp;
     public Text txCount;
     public Text txGameMoney;
+    public Text txGameTips;
 
     public Transform TowerPanel;
     public List<TowerBtn> towerBtns;
@@ -20,9 +21,10 @@ public class GamePanel : BasePanel
         
         // 开始隐藏建塔面板
         TowerPanel.gameObject.SetActive(false);
+        HideGameTips();
     }
     
-    public void AddGameMoney(int num)
+    public void UpdateGameMoney(int num)
     {
         txGameMoney.text = num.ToString();
     }
@@ -36,5 +38,16 @@ public class GamePanel : BasePanel
     {
         ImgHp.sizeDelta = new Vector2(hp/maxHp * 600, 30);
         txHp.text = $"{hp}/{maxHp}";
+    }
+
+    public void ShowGameTips(string info)
+    {
+        txGameTips.gameObject.SetActive(true);
+        txGameTips.text = info;
+    }
+
+    public void HideGameTips()
+    {
+        txGameTips.gameObject.SetActive(false);
     }
 }

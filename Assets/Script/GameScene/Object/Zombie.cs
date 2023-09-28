@@ -16,9 +16,12 @@ public class Zombie : MonoBehaviour
     private float atkCd;
     private float atk;
     private float speed;
+    private int money;
 
     private float lastAtkTime;
     private float lastLockTarTime; // 锁敌时间
+
+    public bool isDead;
 
     private Coroutine stopMoveCoroutine;
 
@@ -35,7 +38,7 @@ public class Zombie : MonoBehaviour
     private void Start()
     {
         // 随机目标
-        if (Random.Range(1, 101) > 50)
+        if (Random.Range(1, 101) > 70)
         {
             target = GameManger.Instance.player;
         }
@@ -47,8 +50,8 @@ public class Zombie : MonoBehaviour
 
     private void Update()
     {
-        // 游戏结束僵尸行为停止
-        if (GameManger.Instance.isGameOver)
+        // 游戏结束或死亡僵尸行为停止
+        if (GameManger.Instance.isGameOver || isDead)
         {
             animator.SetBool("Walk", false);
             agent.isStopped = true;
@@ -77,10 +80,11 @@ public class Zombie : MonoBehaviour
             animator.SetBool("Walk", true);
             agent.SetDestination(target.position);
         }
-
+        
+        // 看向前方
         if (hp > 0)
         {
-            transform.LookAt(target);
+            transform.LookAt(transform.position + transform.forward);
         }
     }
 
@@ -92,6 +96,7 @@ public class Zombie : MonoBehaviour
         hp = info.hp;
         atk = info.atk;
         atkCd = info.atkCd;
+        money = info.money;
 
         // 设置停止导航距离
         agent.stoppingDistance = 3;
@@ -112,6 +117,10 @@ public class Zombie : MonoBehaviour
 
     public void Wound(float atk)
     {
+        if (isDead)
+        {
+            return;
+        }
         hp -= atk;
         // 受伤动画
         animator.SetTrigger("Damage");
@@ -124,17 +133,18 @@ public class Zombie : MonoBehaviour
 
     private void Dead()
     {
+        isDead = true;
+        
         // 移除碰撞器
         Destroy(capsuleCollider);
         capsuleCollider = null;
-        // 停止寻路
-        agent.isStopped = true;
         // 死亡动画
         animator.SetBool("Dead", true);
         // 减少数量
         GameManger.Instance.SubCount();
         // 按照攻击能力加钱
-        GameManger.Instance.AddMoney((int)atkCd);
+        GameManger.Instance.AddOrSubMoney(money);
+        
         Destroy(gameObject, 5);
     }
 

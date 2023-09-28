@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,5 +10,17 @@ public class Bullet : MonoBehaviour
     void Update()
     {
         transform.Translate(transform.forward * (Time.deltaTime * 50), Space.World);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject, 0.5f);
+        }
     }
 }

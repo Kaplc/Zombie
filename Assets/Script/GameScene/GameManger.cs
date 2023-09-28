@@ -47,23 +47,23 @@ public class GameManger: MonoBehaviour
         count = DataManager.Instance.mapInfo.count; // 数量
         // 初始化面板数据
         UIManager.Instance.GetPanel<GamePanel>().UpdateCount(count);
-        UIManager.Instance.GetPanel<GamePanel>().AddGameMoney(money);
+        UIManager.Instance.GetPanel<GamePanel>().UpdateGameMoney(money);
     }
 
-    public void AddMoney(int num)
+    public void AddOrSubMoney(int num)
     {
         money += num;
-        UIManager.Instance.GetPanel<GamePanel>().AddGameMoney(money);
+        UIManager.Instance.GetPanel<GamePanel>().UpdateGameMoney(money);
     }
-    
+
     /// <summary>
     /// 减少数量
     /// </summary>
     public void SubCount()
     {
         count--;
-        // 少于1/3尸潮
-        if (count <= zombieBorn.totalNum/2 && zombieTide == false)
+        // 少于1/2尸潮
+        if (zombieTide == false && count <= zombieBorn.totalNum/1.5f)
         {
             zombieTide = true;
             AccelerateCreateZombie();
@@ -73,6 +73,8 @@ public class GameManger: MonoBehaviour
         {
             // 胜利BGM
             bgm.clip = Resources.Load<AudioClip>("Music/胜利");
+            bgm.Play();
+            bgm.loop = false;
             GameOver(true);
         }
         UIManager.Instance.GetPanel<GamePanel>().UpdateCount(count);
@@ -81,17 +83,13 @@ public class GameManger: MonoBehaviour
     public void GameOver(bool isWin)
     {
         isGameOver = true;
-        // 人物停止移动并失活
-        player.GetComponent<Animator>().SetFloat("Xspeed", 0f);
-        player.GetComponent<Animator>().SetFloat("Yspeed", 0f);
-        player.gameObject.GetComponent<Player>().enabled = false;
         // 摄像机脚本跟随失活
         Camera.main.GetComponent<CameraFollow>().enabled = false;
         // 鼠标解除锁定
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         // 更新结束面板
-        UIManager.Instance.Show<EndPanel>().UpdateInfo(isWin?"胜利": "失败", (money - 200)/10);
+        UIManager.Instance.Show<EndPanel>().UpdateInfo(isWin?"胜利": "失败", DataManager.Instance.mapInfo.count - count);
         // 更新金币并保存
         DataManager.Instance.playerInfo.money += (money - 200) / 10;
         DataManager.Instance.SavePlayerInfo();
@@ -99,9 +97,9 @@ public class GameManger: MonoBehaviour
 
     private void AccelerateCreateZombie()
     {
-
         bgm.clip = acZombieTide;
         bgm.Play();
+        bgm.loop = true;
         zombieBorn.CreateZombieTide();
     }
 }

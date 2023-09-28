@@ -26,7 +26,7 @@ public class ZombieBorn : MonoBehaviour
         eachCd = mapInfo.eachCd;
         waveNum = mapInfo.waveNum;
         waveCd = mapInfo.waveCd;
-        
+
         surplusNum = totalNum;
     }
 
@@ -55,20 +55,15 @@ public class ZombieBorn : MonoBehaviour
         {
             return;
         }
-        
+
         zombieInfo = DataManager.Instance.zombieInfos[Random.Range(0, DataManager.Instance.zombieInfos.Count - 1)];
         Instantiate(Resources.Load<GameObject>(zombieInfo.path), bornPos[Random.Range(0, bornPos.Count - 1)]).AddComponent<Zombie>().Init(zombieInfo);
         surplusNum--;
-        
     }
 
     public void CreateZombieTide()
     {
-        // 数量小于1/3加速生成
-        if (surplusNum == totalNum / 3)
-        {
-            waveCd *= 0.5f;
-            eachCd *= 0.5f;
-        }
+        waveCd *= 0.2f;
+        eachCd *= 0.2f;
     }
 }

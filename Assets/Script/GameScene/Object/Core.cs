@@ -21,12 +21,13 @@ public class Core : MonoBehaviour
 
    public void Wound(float woundHp)
    {
-      
-      hp -= woundHp;
-      if (hp < 0 && GameManger.Instance.isGameOver == false)
+      hp = hp - woundHp >= 0 ? hp - woundHp : 0;
+      if (hp == 0 && GameManger.Instance.isGameOver == false)
       {
          // 结束BGM
          GameManger.Instance.bgm.clip = Resources.Load<AudioClip>("Music/结束");
+         GameManger.Instance.bgm.Play();
+         GameManger.Instance.bgm.loop = false;
          hp = 0;
          GameManger.Instance.GameOver(false);
       }

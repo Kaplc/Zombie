@@ -12,4 +12,5 @@ public class ZombieInfo
    public float atk;
    public float atkCd;
    public float hp;
+   public int money;
 }

@@ -42,6 +42,10 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        if (GameManger.Instance.isGameOver)
+        {
+            return;
+        }
         Move();
         
         GetKeyNumToChangeWeapon();
