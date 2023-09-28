@@ -68430,6 +68430,7 @@ MonoBehaviour:
   isGameOver: 0
   bgm: {fileID: 0}
   zombieBorn: {fileID: 1750874098}
+  showMenu: 0
 --- !u!4 &1414497437
 Transform:
   m_ObjectHideFlags: 0
@@ -81383,7 +81384,7 @@ PrefabInstance:
     - target: {fileID: 8822651307905962897, guid: d7f1b52f9240b4348822c2a5ff5d34fc,
         type: 3}
       propertyPath: m_Radius
-      value: 1
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 8822651307905962897, guid: d7f1b52f9240b4348822c2a5ff5d34fc,
         type: 3}
@@ -102291,7 +102292,7 @@ PrefabInstance:
     - target: {fileID: 8822651307905962897, guid: d7f1b52f9240b4348822c2a5ff5d34fc,
         type: 3}
       propertyPath: m_Radius
-      value: 1
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 8822651307905962897, guid: d7f1b52f9240b4348822c2a5ff5d34fc,
         type: 3}

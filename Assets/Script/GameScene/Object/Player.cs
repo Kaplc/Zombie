@@ -7,7 +7,7 @@ using UnityEngine.PlayerLoop;
 public class Player : MonoBehaviour
 {
     // 动作相关
-    private Animator animator;
+    public Animator animator;
     public float moveSpeed;
 
     // 轴向
@@ -24,10 +24,17 @@ public class Player : MonoBehaviour
     private int weaponIndex;
     private Weapon weapon;
     public Transform handPos;
+
     private Dictionary<int, GameObject> weaponDic;
 
+    // 开火点
     public Transform hungGunFirePos;
     public Transform hungGunFirePosCrouch;
+
+    // 属性
+    private int baseAtk;
+    private float maxHp;
+    private float hp;
 
     private void Start()
     {
@@ -35,20 +42,25 @@ public class Player : MonoBehaviour
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-
+        // 初始化武器
         weaponIndex = 3;
         ChangeWeapon();
+        // 属性
+        maxHp = hp = DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].hp;
+        baseAtk = DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].baseAtk;
+
+        UIManager.Instance.GetPanel<GamePanel>().UpdatePlayerHp(hp, maxHp);
     }
 
     private void Update()
     {
         Move();
-        
+
         if (GameManger.Instance.isGameOver || GameManger.Instance.showMenu)
         {
             return;
         }
-        
+
         GetKeyNumToChangeWeapon();
 
         if (Input.GetMouseButtonDown(0))
@@ -64,7 +76,15 @@ public class Player : MonoBehaviour
 
     public void Wound(float num)
     {
-        print("玩家受伤");
+        hp = Mathf.Clamp(hp - num, 0, maxHp);
+        if (!GameManger.Instance.isGameOver && hp <= 0)
+        {
+            animator.SetBool("Dead", true);
+            GameManger.Instance.GameOver(false);
+            UIManager.Instance.GetPanel<GamePanel>().UpdatePlayerHp(hp, maxHp);
+            return;
+        }
+        UIManager.Instance.GetPanel<GamePanel>().UpdatePlayerHp(hp, maxHp);
     }
 
     #region 手枪和刀动作
@@ -127,7 +147,7 @@ public class Player : MonoBehaviour
         {
             xDir = 0;
         }
-        
+
         // 游戏结束或者打开面板停止移动
         if (GameManger.Instance.isGameOver || GameManger.Instance.showMenu)
         {
@@ -139,7 +159,7 @@ public class Player : MonoBehaviour
             // 镜头随人物旋转
             transform.rotation *= Quaternion.Euler(transform.up * Input.GetAxis("Mouse X"));
         }
-        
+
         // 人物移动
         animator.SetFloat("XSpeed", Mathf.Lerp(animator.GetFloat("XSpeed"), xDir, Time.deltaTime * moveSpeed));
         animator.SetFloat("YSpeed", Mathf.Lerp(animator.GetFloat("YSpeed"), yDir, Time.deltaTime * moveSpeed));
@@ -238,13 +258,10 @@ public class Player : MonoBehaviour
         {
             // 蹲下开火
             Debug.DrawRay(hungGunFirePosCrouch.position, hungGunFirePosCrouch.forward * 1000, Color.red);
-            GameObject bullet = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            bullet.AddComponent<Bullet>();
-            bullet.GetComponent<SphereCollider>().isTrigger = true;
+            GameObject bullet = Instantiate(Resources.Load<GameObject>("Prefabs/Bullet/Bullet"));
             bullet.transform.position = hungGunFirePosCrouch.position;
             bullet.transform.rotation = hungGunFirePosCrouch.rotation;
-            bullet.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-            Destroy(bullet, 3);
+            Destroy(bullet, 0.5f);
             RaycastHit info;
             // 开枪射线检测
             if (Physics.Raycast(hungGunFirePosCrouch.position, hungGunFirePosCrouch.forward, out info, 1000, 1 << LayerMask.NameToLayer("Enemy")))
@@ -254,15 +271,12 @@ public class Player : MonoBehaviour
         }
         else
         {
-            // 蹲下开火
+            // 起身开火
             Debug.DrawRay(hungGunFirePos.position, hungGunFirePos.forward * 1000, Color.red);
-            GameObject bullet = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            bullet.AddComponent<Bullet>();
-            bullet.GetComponent<SphereCollider>().isTrigger = true;
+            GameObject bullet = Instantiate(Resources.Load<GameObject>("Prefabs/Bullet/Bullet"));
             bullet.transform.position = hungGunFirePos.position;
             bullet.transform.rotation = hungGunFirePos.rotation;
-            bullet.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-            Destroy(bullet, 3);
+            Destroy(bullet, 0.5f);
             RaycastHit info;
             // 开枪射线检测
             if (Physics.Raycast(hungGunFirePos.position, hungGunFirePos.forward, out info, 1000, 1 << LayerMask.NameToLayer("Enemy")))
@@ -318,6 +332,7 @@ public class Player : MonoBehaviour
                 {
                     Crouch();
                 }
+
                 break;
             case 3:
                 weapon = Instantiate(Resources.Load<GameObject>("Prefabs/Weapon/weapon_knife"), handPos).GetComponent<Weapon>();
@@ -326,9 +341,10 @@ public class Player : MonoBehaviour
                 {
                     Crouch();
                 }
+
                 break;
         }
     }
-    
+
     #endregion
 }

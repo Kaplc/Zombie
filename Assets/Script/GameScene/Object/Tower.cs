@@ -103,7 +103,7 @@ public class Tower : MonoBehaviour
         tarDir.y = a.z;
         selfDir.x = b.x;
         selfDir.y = b.z;
-        print(Mathf.Abs(Vector2.SignedAngle(tarDir, selfDir)));
+        
         if (Mathf.Abs(Vector2.SignedAngle(tarDir, selfDir)) < tarAngel)
         {
             return true;

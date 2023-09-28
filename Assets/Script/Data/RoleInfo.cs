@@ -7,4 +7,6 @@ public class RoleInfo
     public int id;
     public string path; // 预设体路径
     public int unlockMoney;
+    public int baseAtk;
+    public int hp;
 }

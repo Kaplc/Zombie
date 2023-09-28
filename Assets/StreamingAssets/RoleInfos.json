@@ -1,5 +1,5 @@
 [
-  {"id":0,"path":"Prefabs/Role/0","unlockMoney":0},
-  {"id":1,"path":"Prefabs/Role/1","unlockMoney":100},
-  {"id":2,"path":"Prefabs/Role/2","unlockMoney":200}
+  {"id":0,"path":"Prefabs/Role/0","unlockMoney":0,"baseAtk": 1, "hp": 100},
+  {"id":1,"path":"Prefabs/Role/1","unlockMoney":100, "baseAtk": 2, "hp": 150},
+  {"id":2,"path":"Prefabs/Role/2","unlockMoney":200, "baseAtk": 4, "hp": 200}
 ]

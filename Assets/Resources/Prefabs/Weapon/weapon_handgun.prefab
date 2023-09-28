@@ -125,3 +125,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   firePos: {fileID: 317702549510439865}
+  bulletCount: 7
+  magazineCount: 35

@@ -70,6 +70,8 @@ public class Zombie : MonoBehaviour
                 lastAtkTime = Time.time;
                 Attack();
             }
+            // 攻击自动转向
+            transform.LookAt(target);
         }
 
         // 已经可以移动时, 3秒重新索敌

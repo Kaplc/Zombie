@@ -25,7 +25,8 @@ public class TowerPos : MonoBehaviour
                     UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("金钱<color=red>不足</color>");
                     return;
                 }
-
+                // 建造动作
+                GameManger.Instance.player.GetComponent<Player>().animator.SetTrigger("Builting");
                 Destroy(tower.gameObject);
                 tower = Instantiate(Resources.Load<GameObject>("Prefabs/Tower/Tow" + Mathf.Clamp(tower.lv + 1, 1, 3)), transform)
                     .GetComponent<Tower>();
@@ -38,6 +39,7 @@ public class TowerPos : MonoBehaviour
                 // 够钱才能放塔
                 if (GameManger.Instance.money >= tower.nextLvMoney)
                 {
+                    GameManger.Instance.player.GetComponent<Player>().animator.SetTrigger("Builting");
                     UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("按<color=red>\"T\"</color>升级");
                     // 建造扣钱
                     GameManger.Instance.AddOrSubMoney(-tower.nextLvMoney);

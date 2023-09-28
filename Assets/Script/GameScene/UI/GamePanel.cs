@@ -12,6 +12,8 @@ public class GamePanel : BasePanel
     public Text txGameMoney;
     public Text txGameTips;
     public Image imgStar;
+    public RectTransform imgPlayerHp;
+    public Text txPlayerHp;
 
     public Transform TowerPanel;
     public List<TowerBtn> towerBtns;
@@ -50,5 +52,11 @@ public class GamePanel : BasePanel
     public void HideGameTips()
     {
         txGameTips.gameObject.SetActive(false);
+    }
+
+    public void UpdatePlayerHp(float hp, float maxHp)
+    {
+        imgPlayerHp.sizeDelta = new Vector2(hp / maxHp * 400, 30);
+        txPlayerHp.text = $"{hp}/{maxHp}";
     }
 }
