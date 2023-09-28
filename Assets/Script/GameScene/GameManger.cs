@@ -83,6 +83,8 @@ public class GameManger: MonoBehaviour
     public void GameOver(bool isWin)
     {
         isGameOver = true;
+        // 准星隐藏
+        UIManager.Instance.GetPanel<GamePanel>().imgStar.gameObject.SetActive(false);
         // 摄像机脚本跟随失活
         Camera.main.GetComponent<CameraFollow>().enabled = false;
         // 鼠标解除锁定

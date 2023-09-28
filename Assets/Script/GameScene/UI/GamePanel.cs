@@ -11,6 +11,7 @@ public class GamePanel : BasePanel
     public Text txCount;
     public Text txGameMoney;
     public Text txGameTips;
+    public Image imgStar;
 
     public Transform TowerPanel;
     public List<TowerBtn> towerBtns;
