@@ -2844,10 +2844,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44502528b11543e48964a371dc102f54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 0}
   moveSpeed: 10
   handPos: {fileID: 2112119741717153336}
+  remainingBullets: 35
   hungGunFirePos: {fileID: 127306502}
   hungGunFirePosCrouch: {fileID: 1467437494}
+  reloading: 0
 --- !u!1 &2112119741717108198
 GameObject:
   m_ObjectHideFlags: 0
