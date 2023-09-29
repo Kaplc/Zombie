@@ -70,12 +70,12 @@ public class TowerPos : MonoBehaviour
                 }
                 else
                 {
-                    UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("按<color=red>\"T\"</color>升级");
+                    UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("按<color=red>\"T\"</color>升级(<color=yellow>200$</color>)");
                 }
             }
             else
             {
-                UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("按<color=red>\"T\"</color>建造防御塔");
+                UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("按<color=red>\"T\"</color>建造防御塔(<color=yellow>200$</color>)");
             }
         }
     }

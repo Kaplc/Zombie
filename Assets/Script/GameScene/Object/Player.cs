@@ -25,7 +25,7 @@ public class Player : MonoBehaviour
     private Weapon weapon;
     public Transform handPos;
     public int remainingBullets; // 剩余子弹
-    private Dictionary<int, Weapon> weaponBag;
+    private Dictionary<int, GameObject> weaponBag;
 
     // 开火点
     public Transform hungGunFirePos;
@@ -45,7 +45,7 @@ public class Player : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         // 初始化武器背包
-        weaponBag = new Dictionary<int, Weapon>();
+        weaponBag = new Dictionary<int, GameObject>();
         weaponIndex = 3;
         ChangeWeapon();
         // 属性
@@ -375,11 +375,11 @@ public class Player : MonoBehaviour
 
     private void ChangeWeapon()
     {
-        if (weapon != null)
+        if (weapon)
         {
-            Destroy(weapon.gameObject);
+            weapon.gameObject.SetActive(false);
         }
-
+        
         switch (weaponIndex)
         {
             case 1:
@@ -389,11 +389,12 @@ public class Player : MonoBehaviour
                 if (!weaponBag.ContainsKey(2))
                 {
                     weapon = Instantiate(Resources.Load<GameObject>("Prefabs/Weapon/weapon_handgun"), handPos).GetComponent<Weapon>();
-                    weaponBag.Add(2, weapon);
+                    weaponBag.Add(2, weapon.gameObject);
                 }
                 else
                 {
-                    weapon = weaponBag[2];
+                    weapon = weaponBag[2].GetComponent<Weapon>();
+                    weapon.gameObject.SetActive(true);
                 }
 
                 animator.runtimeAnimatorController = Instantiate(Resources.Load<RuntimeAnimatorController>("Animator/Role/HandGun"));
@@ -406,14 +407,15 @@ public class Player : MonoBehaviour
                 break;
             case 3:
 
-                if (!weaponBag.ContainsKey(2))
+                if (!weaponBag.ContainsKey(3))
                 {
                     weapon = Instantiate(Resources.Load<GameObject>("Prefabs/Weapon/weapon_knife"), handPos).GetComponent<Weapon>();
-                    weaponBag.Add(3,weapon);
+                    weaponBag.Add(3,weapon.gameObject);
                 }
                 else
                 {
-                    weapon = weaponBag[3];
+                    weapon = weaponBag[3].GetComponent<Weapon>();
+                    weapon.gameObject.SetActive(true);
                 }
                 
                 animator.runtimeAnimatorController = Instantiate(Resources.Load<RuntimeAnimatorController>("Animator/Role/Knife"));

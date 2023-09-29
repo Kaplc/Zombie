@@ -13,8 +13,7 @@ public abstract class BasePanel : MonoBehaviour
     public float fadeSpeed = 3f;
     public UnityAction hideCallBack;
 
-    private bool fadeIsOver;
-    
+
     protected virtual void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
@@ -26,7 +25,6 @@ public abstract class BasePanel : MonoBehaviour
 
     protected virtual void Start()
     {
-        
         Init();
     }
 
@@ -34,41 +32,33 @@ public abstract class BasePanel : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (!fadeIsOver)
-        {
-            Fade();
-        }
-        
+        Fade();
     }
 
     public virtual void Show()
     {
         showFade = true;
         canvasGroup.alpha = 0;
-        
-        fadeIsOver = false;
     }
-    
+
     public virtual void Hide(UnityAction callBack)
     {
         hideFade = true;
         canvasGroup.alpha = 1;
         hideCallBack += callBack; // 淡出成功的回调
-        
-        fadeIsOver = false;
     }
 
     private void Fade()
     {
         if (showFade)
         {
-            if (canvasGroup.alpha >=1)
+            if (canvasGroup.alpha >= 1)
             {
                 canvasGroup.alpha = 1;
                 showFade = false;
-                fadeIsOver = true;
                 return;
             }
+
             // 淡入
             canvasGroup.alpha += Time.deltaTime * fadeSpeed;
         }
@@ -76,15 +66,15 @@ public abstract class BasePanel : MonoBehaviour
         if (hideFade)
         {
             // 淡出
-            if (canvasGroup.alpha <=0)
+            if (canvasGroup.alpha <= 0)
             {
                 canvasGroup.alpha = 0;
                 hideFade = false;
                 // 淡出成功执行回调
                 hideCallBack?.Invoke();
-                fadeIsOver = true;
                 return;
             }
+
             // 淡入
             canvasGroup.alpha -= Time.deltaTime * fadeSpeed;
         }

@@ -14,6 +14,8 @@ public class GamePanel : BasePanel
 
     public Text txGameTips;
 
+    public Animator animTileTips;
+
     // 准星
     public Image imgStar;
 
@@ -25,7 +27,7 @@ public class GamePanel : BasePanel
     public Text txBulletCount;
 
     public Transform TowerPanel;
-    public List<TowerBtn> towerBtns;
+    public List<ItemBtn> towerBtns;
     
     // 刷新开火图标cd
     private bool isOnRefreshBulletImg;
@@ -109,5 +111,10 @@ public class GamePanel : BasePanel
     {
         imgBulletCd.gameObject.SetActive(true);
         txBulletCount.gameObject.SetActive(true);
+    }
+
+    public void ShowTileTips()
+    {
+        animTileTips.SetTrigger("ShowTips");
     }
 }

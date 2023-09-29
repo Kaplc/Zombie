@@ -129,6 +129,8 @@ public class GameManger: MonoBehaviour
 
     private void AccelerateCreateZombie()
     {
+        UIManager.Instance.GetPanel<GamePanel>().ShowTileTips();
+        
         bgm.clip = acZombieTide;
         bgm.Play();
         bgm.loop = true;
