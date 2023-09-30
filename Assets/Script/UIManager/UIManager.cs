@@ -18,7 +18,7 @@ public class UIManager
         GameObject.DontDestroyOnLoad(panelCanvas);
     }
 
-    public T Show<T>() where T : BasePanel
+    public T Show<T>(bool isFade = true) where T : BasePanel
     {
         // 获取类名与预设体同名
         string panelName = typeof(T).Name;
@@ -26,14 +26,14 @@ public class UIManager
         // 存在面板直接取出
         if (panelsDic.TryGetValue(panelName, out var value))
         {
-            value.Show();
+            value.Show(isFade);
             return value as T;
         }
 
         // 不存在直接创建并保存
         T newPanel = GameObject.Instantiate(Resources.Load<GameObject>("UI/" + panelName), panelCanvas.transform).GetComponent<T>();
         panelsDic.Add(panelName, newPanel);
-        newPanel.Show();
+        newPanel.Show(isFade);
         return newPanel;
     }
 

@@ -35,10 +35,19 @@ public abstract class BasePanel : MonoBehaviour
         Fade();
     }
 
-    public virtual void Show()
+    public virtual void Show(bool isFade)
     {
-        showFade = true;
-        canvasGroup.alpha = 0;
+        if (isFade)
+        {
+            showFade = true;
+            canvasGroup.alpha = 0;
+        }
+        else
+        {
+            showFade = false;
+            canvasGroup.alpha = 1;
+        }
+        
     }
 
     public virtual void Hide(UnityAction callBack)

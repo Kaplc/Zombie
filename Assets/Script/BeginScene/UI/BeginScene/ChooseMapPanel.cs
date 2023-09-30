@@ -20,13 +20,7 @@ public class ChooseMapPanel : BasePanel
         {
             UIManager.Instance.Hide<ChooseMapPanel>(true, () =>
             {
-                AsyncOperation ao = SceneManager.LoadSceneAsync("GameSceneCountrySide");
-                ao.completed += operation =>
-                {
-                    UIManager.Instance.Show<GamePanel>();
-                    
-                };
-                
+                UIManager.Instance.Show<LoadingPanel>(false);
             });
         });
         btnBack.onClick.AddListener(() =>
