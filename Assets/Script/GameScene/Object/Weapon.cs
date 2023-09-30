@@ -16,6 +16,7 @@ public class Weapon : MonoBehaviour
     public Transform firePos;
     public int bulletCount;
     public int nowBulletCount;
+    public int atk;
 
     private void Awake()
     {

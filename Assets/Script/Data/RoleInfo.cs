@@ -9,4 +9,6 @@ public class RoleInfo
     public int unlockMoney;
     public int baseAtk;
     public int hp;
+    public int mainBullets;
+    public int hanGunBullets;
 }

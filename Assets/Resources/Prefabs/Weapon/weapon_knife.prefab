@@ -96,6 +96,4 @@ MonoBehaviour:
   firePos: {fileID: 0}
   bulletCount: 99999
   nowBulletCount: 0
-  fireCd: 0
-  speed: 0
-  lastFireTime: 0
+  atk: 2

@@ -4,6 +4,6 @@ using UnityEngine;
 
 public class PlayerInfo
 {
-    public int money = 99999;
+    public int money = 0;
     public List<int> unlockRoles = new List<int>(){0};
 }

@@ -24,7 +24,8 @@ public class Player : MonoBehaviour
     private int weaponIndex;
     private Weapon weapon;
     public Transform handPos;
-    public int remainingBullets; // 剩余子弹
+    private int hanGunBullets; // 手枪剩余子弹
+    private int mainBullets; // 主武器剩余子弹
     private Dictionary<int, GameObject> weaponBag;
 
     // 开火点
@@ -35,8 +36,6 @@ public class Player : MonoBehaviour
     private int baseAtk;
     private float maxHp;
     private float hp;
-
-    public bool reloading;
 
     private void Start()
     {
@@ -51,6 +50,7 @@ public class Player : MonoBehaviour
         // 属性
         maxHp = hp = DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].hp;
         baseAtk = DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].baseAtk;
+        RestoreBullet();
 
         UIManager.Instance.GetPanel<GamePanel>().UpdatePlayerHp(hp, maxHp);
     }
@@ -71,14 +71,14 @@ public class Player : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             // 有后备子弹重新装填
-            if (remainingBullets > 0 && weapon.nowBulletCount == 0)
+            if (hanGunBullets > 0 && weapon.nowBulletCount == 0)
             {
                 animator.SetBool("Reloading", true);
                 return;
             }
 
             // 枪里有子弹才攻击
-            if (weapon.nowBulletCount > 0 && remainingBullets > 0 || weapon.nowBulletCount > 0 && remainingBullets == 0)
+            if (weapon.nowBulletCount > 0 && hanGunBullets > 0 || weapon.nowBulletCount > 0 && hanGunBullets == 0)
             {
                 Attack();
             }
@@ -92,7 +92,7 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R) && weapon.nowBulletCount != weapon.bulletCount)
         {
             // 有后备子弹才能重新装填
-            if (remainingBullets > 0)
+            if (hanGunBullets > 0)
             {
                 animator.SetBool("Reloading", true);
             }
@@ -111,11 +111,11 @@ public class Player : MonoBehaviour
         {
             animator.SetBool("Dead", true);
             GameManger.Instance.GameOver(false);
-            UIManager.Instance.GetPanel<GamePanel>().UpdatePlayerHp(hp, maxHp);
+            UpdateInfoToPanel();
             return;
         }
 
-        UIManager.Instance.GetPanel<GamePanel>().UpdatePlayerHp(hp, maxHp);
+        UpdateInfoToPanel();
     }
 
     #region 手枪和刀动作
@@ -279,7 +279,7 @@ public class Player : MonoBehaviour
             Physics.OverlapSphere(transform.position + transform.forward * 2 + transform.up, 1f, 1 << LayerMask.NameToLayer("Enemy"));
         foreach (Collider enemy in enemies)
         {
-            enemy.GetComponent<Zombie>().Wound(3);
+            enemy.GetComponent<Zombie>().Wound(weapon.atk + baseAtk);
         }
     }
 
@@ -298,7 +298,7 @@ public class Player : MonoBehaviour
             // 开枪射线检测
             if (Physics.Raycast(hungGunFirePosCrouch.position, hungGunFirePosCrouch.forward, out info, 1000, 1 << LayerMask.NameToLayer("Enemy")))
             {
-                info.transform.gameObject.GetComponent<Zombie>().Wound(5);
+                info.transform.gameObject.GetComponent<Zombie>().Wound(weapon.atk + baseAtk);
             }
         }
         else
@@ -314,7 +314,7 @@ public class Player : MonoBehaviour
             // 开枪射线检测
             if (Physics.Raycast(hungGunFirePos.position, hungGunFirePos.forward, out info, 1000, 1 << LayerMask.NameToLayer("Enemy")))
             {
-                info.transform.gameObject.GetComponent<Zombie>().Wound(5);
+                info.transform.gameObject.GetComponent<Zombie>().Wound(weapon.atk + baseAtk);
             }
         }
 
@@ -323,25 +323,25 @@ public class Player : MonoBehaviour
         // 刷新开火图标
         UIManager.Instance.GetPanel<GamePanel>().RefreshBulletImg();
         // 更新面板子弹数
-        UpdateBulletCountToPanel();
+        UpdateInfoToPanel();
     }
 
     public void EndReloadEvent()
     {
         // 先加回枪里剩下的子弹再重新装填
-        remainingBullets += weapon.nowBulletCount;
+        hanGunBullets += weapon.nowBulletCount;
         // 所有子弹加起来少于一个弹夹则填装剩下的全部子弹
-        if (remainingBullets < weapon.bulletCount)
+        if (hanGunBullets < weapon.bulletCount)
         {
-            weapon.ReLoading(remainingBullets);
-            remainingBullets = 0;
+            weapon.ReLoading(hanGunBullets);
+            hanGunBullets = 0;
         }
         else
         {
             weapon.ReLoading(weapon.bulletCount);
-            remainingBullets -= weapon.bulletCount;
+            hanGunBullets -= weapon.bulletCount;
         }
-        UpdateBulletCountToPanel();
+        UpdateInfoToPanel();
         animator.SetBool("Reloading", false);
     }
 
@@ -403,7 +403,7 @@ public class Player : MonoBehaviour
                 // 其他武器现实子弹数
                 UIManager.Instance.GetPanel<GamePanel>().ShowBulletInfo();
 
-                UpdateBulletCountToPanel();
+                UpdateInfoToPanel();
                 break;
             case 3:
 
@@ -422,7 +422,7 @@ public class Player : MonoBehaviour
                 if (isCrouch)
                     Crouch();
 
-                UpdateBulletCountToPanel();
+                UpdateInfoToPanel();
                 // 近战武器隐藏子弹信息
                 UIManager.Instance.GetPanel<GamePanel>().HideBulletInfo();
                 break;
@@ -431,8 +431,48 @@ public class Player : MonoBehaviour
 
     #endregion
 
-    private void UpdateBulletCountToPanel()
+    private void UpdateInfoToPanel()
     {
-        UIManager.Instance.GetPanel<GamePanel>().UpdateBullet(weapon.nowBulletCount, remainingBullets);
+        UIManager.Instance.GetPanel<GamePanel>().UpdateBullet(weapon.nowBulletCount, hanGunBullets);
+        UIManager.Instance.GetPanel<GamePanel>().UpdatePlayerHp(hp, maxHp);
+        UIManager.Instance.GetPanel<GamePanel>().UpdateAtk(baseAtk);
     }
+
+    #region 补给相关
+
+    public bool RestoreHealth()
+    {
+        // 禁止满血加血
+        if ((int)maxHp == (int)hp)
+        {
+            UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("血量已满");
+            return false;
+        }
+        
+        hp = maxHp;
+        UpdateInfoToPanel();
+        return true;
+    }
+
+    public bool RestoreBullet()
+    {
+        // 禁止满子弹加子弹
+        if (mainBullets == DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].mainBullets || hanGunBullets == DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].hanGunBullets)
+        {
+            UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("后备弹药已满");
+            return false;
+        }
+        
+        mainBullets = DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].mainBullets;
+        hanGunBullets = DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].hanGunBullets;
+        UpdateInfoToPanel();
+        return true;
+    }
+
+    public void AddAtk()
+    {
+        baseAtk += 1;
+        UpdateInfoToPanel();
+    }
+    #endregion
 }

@@ -7,11 +7,42 @@ public class Core : MonoBehaviour
 {
    private float hp;
    private float maxHp;
+   
+   private bool within;
+   private bool isShow;
 
    private void Start()
    {
       maxHp = hp = DataManager.Instance.mapInfo.coreHp;
       UpdateHpForPanel();
+   }
+
+   private void Update()
+   {
+      if (within)
+      {
+         if (Input.GetKeyDown(KeyCode.E))
+         {
+            UIManager.Instance.GetPanel<GamePanel>().ShowShopPanel();
+            isShow = true;
+         }
+
+         if (isShow)
+         {
+            if (Input.GetKeyDown(KeyCode.Alpha8))
+            {
+               UIManager.Instance.GetPanel<GamePanel>().itemBtns[0].Trigger();
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha9))
+            {
+               UIManager.Instance.GetPanel<GamePanel>().itemBtns[1].Trigger();
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha0))
+            {
+               UIManager.Instance.GetPanel<GamePanel>().itemBtns[2].Trigger();
+            }
+         }
+      }
    }
 
    public void UpdateHpForPanel()
@@ -33,5 +64,25 @@ public class Core : MonoBehaviour
       }
       
       UpdateHpForPanel();
+   }
+   
+   private void OnTriggerEnter(Collider other)
+   {
+      if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
+      {
+         within = true;
+         UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("按<color=red>\"E\"</color>打开补给面板");
+      }
+   }
+
+   private void OnTriggerExit(Collider other)
+   {
+      if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
+      {
+         within = false;
+         isShow = false;
+         UIManager.Instance.GetPanel<GamePanel>().HideGameTips();
+         UIManager.Instance.GetPanel<GamePanel>().HideShopPanel();
+      }
    }
 }
