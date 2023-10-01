@@ -10,6 +10,7 @@ public class GameManger: MonoBehaviour
     
     public Transform roleBornPos;
     public Transform player;
+    public Player playerCpm;
     
     public Core core;
     public int count;
@@ -52,6 +53,8 @@ public class GameManger: MonoBehaviour
         // 初始化面板数据
         UIManager.Instance.GetPanel<GamePanel>().UpdateCount(count);
         UIManager.Instance.GetPanel<GamePanel>().UpdateGameMoney(money);
+        // 
+        playerCpm = player.GetComponent<Player>();
     }
 
     private void Update()
@@ -101,10 +104,6 @@ public class GameManger: MonoBehaviour
         
         if (count == 0)
         {
-            // 胜利BGM
-            bgm.clip = Resources.Load<AudioClip>("Music/胜利");
-            bgm.Play();
-            bgm.loop = false;
             GameOver(true);
         }
         UIManager.Instance.GetPanel<GamePanel>().UpdateCount(count);
@@ -113,6 +112,13 @@ public class GameManger: MonoBehaviour
     public void GameOver(bool isWin)
     {
         isGameOver = true;
+        // 胜利或失败BGM
+        if (isWin)
+            bgm.clip = Resources.Load<AudioClip>("Music/胜利");
+        else 
+            bgm.clip = Resources.Load<AudioClip>("Music/结束");
+        bgm.Play();
+        bgm.loop = false;
         // 准星隐藏
         UIManager.Instance.GetPanel<GamePanel>().imgStar.gameObject.SetActive(false);
         // 摄像机脚本跟随失活

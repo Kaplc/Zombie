@@ -13,6 +13,15 @@ public class CameraFollow : MonoBehaviour
 
     public float followSpeed;
 
+    private float currRota; // 当前开火点的角度
+    public float speed;
+    private Vector3 newRota;
+
+    private void Start()
+    {
+        newRota = new Vector3(0, 0, 0);
+    }
+
     private void Update()
     {
         if (GameManger.Instance.showMenu)
@@ -22,7 +31,7 @@ public class CameraFollow : MonoBehaviour
         
         // 镜头随鼠标上下移动
         lookAtY += Input.GetAxis("Mouse Y") * Time.deltaTime;
-        
+
         // 限制上下移动的范围
         lookAtY = Mathf.Clamp(lookAtY, 1, 3);
     }

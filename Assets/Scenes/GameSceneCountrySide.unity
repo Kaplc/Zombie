@@ -64838,7 +64838,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1335126707}
   m_LocalRotation: {x: 0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 245.34, y: 29.053288, z: 223.49}
+  m_LocalPosition: {x: 245.34, y: 29.23, z: 223.49}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -68424,6 +68424,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roleBornPos: {fileID: 1335126708}
   player: {fileID: 0}
+  playerCpm: {fileID: 0}
   core: {fileID: 1853044675}
   count: 0
   money: 0
@@ -71372,6 +71373,7 @@ MonoBehaviour:
   lookAtY: 2
   lookAtPos: {x: 0, y: 0, z: 0}
   followSpeed: 10
+  speed: 10
 --- !u!1001 &1457945362
 PrefabInstance:
   m_ObjectHideFlags: 0

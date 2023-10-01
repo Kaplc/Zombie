@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 127306502}
   m_Layer: 10
-  m_Name: HandGunFirePos
+  m_Name: FirePos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -40,7 +40,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1467437494}
   m_Layer: 10
-  m_Name: HandGunFirePosCrouch
+  m_Name: CrouchFirePos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2847,8 +2847,8 @@ MonoBehaviour:
   animator: {fileID: 0}
   moveSpeed: 10
   handPos: {fileID: 2112119741717153336}
-  hungGunFirePos: {fileID: 127306502}
-  hungGunFirePosCrouch: {fileID: 1467437494}
+  firePos: {fileID: 127306502}
+  crouchFirePos: {fileID: 1467437494}
   transitionSpeed: 3.75
 --- !u!1 &2112119741717108198
 GameObject:

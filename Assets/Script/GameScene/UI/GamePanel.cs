@@ -113,7 +113,7 @@ public class GamePanel : BasePanel
         txBulletCount.gameObject.SetActive(true);
     }
 
-    public void UpdateAtk(int atk)
+    public void UpdateAtk(float atk)
     {
         txAtk.text = $"基础攻击力: {atk}";
     }

@@ -20,7 +20,7 @@ public class TowerPos : MonoBehaviour
                     return;
                 }
 
-                if (GameManger.Instance.money <= tower.nextLvMoney)
+                if (GameManger.Instance.money < tower.nextLvMoney)
                 {
                     UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("金钱<color=red>不足</color>");
                     return;
