@@ -57,7 +57,7 @@ public class GameManger: MonoBehaviour
     private void Update()
     {
         // esc打开菜单
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && !isGameOver)
         {
             showMenu = !showMenu;
             
@@ -122,6 +122,7 @@ public class GameManger: MonoBehaviour
         Cursor.visible = true;
         // 更新结束面板
         UIManager.Instance.Show<EndPanel>().UpdateInfo(isWin?"胜利": "失败", DataManager.Instance.mapInfo.count - count);
+        UIManager.Instance.Hide<MenuPanel>();
         // 更新金币并保存
         DataManager.Instance.playerInfo.money += (money - 200) / 10;
         DataManager.Instance.SavePlayerInfo();

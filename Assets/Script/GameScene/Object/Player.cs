@@ -9,16 +9,12 @@ public class Player : MonoBehaviour
     // 动作相关
     public Animator animator;
     public float moveSpeed;
-
+    
     // 轴向
     private float xDir;
     private float yDir;
 
     private bool isCrouch; // 蹲下
-    private Coroutine crouchCoroutine;
-
-    private bool isProne;
-    private Coroutine proneCoroutine;
 
     // 武器相关
     private int weaponIndex;
@@ -36,7 +32,13 @@ public class Player : MonoBehaviour
     private int baseAtk;
     private float maxHp;
     private float hp;
-
+    
+    // 动画过度协程
+    public float transitionSpeed;
+    private Coroutine addWeightCoroutine;
+    private Coroutine subWeightCoroutine;
+    
+    
     private void Start()
     {
         animator = GetComponent<Animator>();
@@ -101,6 +103,7 @@ public class Player : MonoBehaviour
 
     private void Attack()
     {
+        animator.SetBool("Attacking", true);
         animator.SetTrigger("Attack");
     }
 
@@ -148,35 +151,13 @@ public class Player : MonoBehaviour
         // 按下c蹲下
         if (Input.GetKeyDown(KeyCode.C))
         {
-            // 趴下时按c, 
-            if (isProne)
-            {
-                ResetWeight(); // 重置权重
-                isProne = false; // 取消标记为趴下
-                animator.SetBool("Prone", false);
-            }
-
-            isCrouch = !isCrouch;
             Crouch();
         }
-
-        // 按下z趴下
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            isProne = !isProne;
-            Prone();
-        }
-
-        // 按x翻滚
-        if (Input.GetKeyDown(KeyCode.X))
+        
+        // 按x翻滚: 在装弹和攻击时无效
+        if (Input.GetKeyDown(KeyCode.X) && !animator.GetBool("Reloading") && !animator.GetBool("Attacking"))
         {
             Roll();
-        }
-
-        // 趴下禁止左右
-        if (isProne)
-        {
-            xDir = 0;
         }
 
         // 游戏结束或者打开面板停止移动
@@ -190,6 +171,47 @@ public class Player : MonoBehaviour
             // 镜头随人物旋转
             transform.rotation *= Quaternion.Euler(transform.up * Input.GetAxis("Mouse X"));
         }
+        
+        // 任意方向移动时切换为移动攻击层：不在roll时切换
+        if ((xDir != 0 || yDir != 0) && !animator.GetBool("Reloading") && !animator.GetBool("Roll"))
+        {
+            StopAllCoroutine();
+            if (weapon.type != E_Weapon.Knife)
+            {
+                subWeightCoroutine = StartCoroutine(SubWeight("MoveReload"));
+            }
+            print("move1");
+            addWeightCoroutine = StartCoroutine(AddWeight("MoveShoot"));
+        }
+        // 移动装弹层：不在roll时切换
+        else if ((xDir != 0 || yDir != 0) && animator.GetBool("Reloading") && !animator.GetBool("Roll"))
+        {
+            StopAllCoroutine();
+            subWeightCoroutine = StartCoroutine(SubWeight("MoveShoot"));
+            if (weapon.type != E_Weapon.Knife)
+            {
+                addWeightCoroutine = StartCoroutine(AddWeight("MoveReload"));
+            }
+        }
+        // 停下攻击层： roll或者停下时切换
+        else if (xDir == 0 && yDir == 0 || animator.GetBool("Roll"))
+        {
+            // 装弹时不能滚
+            if (!animator.GetBool("Reloading"))
+            {
+                StopAllCoroutine();
+                if (weapon.type == E_Weapon.Knife)
+                {
+                    animator.SetLayerWeight(animator.GetLayerIndex("MoveShoot"), 0f);
+                }
+                else
+                {
+                    subWeightCoroutine = StartCoroutine(SubWeight("MoveShoot"));
+                    subWeightCoroutine = StartCoroutine(SubWeight("MoveReload"));
+                }
+            }
+        }
+        
 
         // 人物移动
         animator.SetFloat("XSpeed", Mathf.Lerp(animator.GetFloat("XSpeed"), xDir, Time.deltaTime * moveSpeed));
@@ -198,80 +220,70 @@ public class Player : MonoBehaviour
 
     private void Crouch()
     {
-        // 趴下时按蹲下强制起身
-        if (crouchCoroutine != null)
-        {
-            StopCoroutine(crouchCoroutine);
-        }
-
-        if (isCrouch)
-            // true为蹲下
-            crouchCoroutine = StartCoroutine(CrouchDownAnimation());
-        else
-            crouchCoroutine = StartCoroutine(CrouchUpAnimation());
+        isCrouch = !isCrouch;
+        animator.SetBool("Crouch", isCrouch);
     }
-
-    private void Prone()
-    {
-        ResetWeight();
-        // 触发prone参数
-        animator.SetBool("Prone", isProne);
-    }
-
+    
     private void Roll()
     {
-        animator.SetTrigger("Roll");
-    }
-
-    // 重置权重
-    private void ResetWeight()
-    {
-        if (crouchCoroutine != null)
-        {
-            StopCoroutine(crouchCoroutine);
-        }
-
-        isCrouch = false;
-        crouchCoroutine = StartCoroutine(CrouchUpAnimation());
+        StopAllCoroutine();
+        animator.SetBool("Roll", true);
     }
 
     #endregion
 
-    #region 动作过度协程
+    #region 动作过度相关
 
     /// <summary>
-    /// 蹲下优化动画协程
+    /// 优化动画分层启动时的过度协程
     /// </summary>
-    /// <param name="isCrouch"></param>
+    /// <param name="layerName">动画层名</param>
     /// <returns></returns>
-    private IEnumerator CrouchDownAnimation()
+    private IEnumerator AddWeight(string layerName)
     {
-        while (animator.GetLayerWeight(1) < 1f)
+        while (animator.GetLayerWeight(animator.GetLayerIndex(layerName)) < 1f)
         {
-            // 蹲下
-            animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 1, Time.deltaTime * moveSpeed));
+            animator.SetLayerWeight(animator.GetLayerIndex(layerName), Mathf.Lerp(animator.GetLayerWeight(animator.GetLayerIndex(layerName)), 1, Time.deltaTime * transitionSpeed));
             yield return null;
         }
     }
 
     /// <summary>
-    /// 蹲下后起身动画
+    /// 优化动画分层关闭时的过度协程
     /// </summary>
-    /// <param name="isCrouch"></param>
+    /// <param name="layerName">动画层名</param>
     /// <returns></returns>
-    private IEnumerator CrouchUpAnimation()
+    private IEnumerator SubWeight(string layerName)
     {
-        while (animator.GetLayerWeight(1) > 0f)
+        while (animator.GetLayerWeight(animator.GetLayerIndex(layerName)) > 0.001f)
         {
-            animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0, Time.deltaTime * moveSpeed));
+            animator.SetLayerWeight(animator.GetLayerIndex(layerName), Mathf.Lerp(animator.GetLayerWeight(animator.GetLayerIndex(layerName)), 0, Time.deltaTime * transitionSpeed));
             yield return null;
         }
     }
+    
+    // 停止所有过渡协程
+    private void StopAllCoroutine()
+    {
+        if (addWeightCoroutine != null)
+        {
+            StopCoroutine(addWeightCoroutine);
+        }
 
+        if (subWeightCoroutine != null)
+        {
+            StopCoroutine(subWeightCoroutine);
+        }
+    }
     #endregion
 
     #region 动作事件
 
+    public void RollEndEvent()
+    {
+        animator.SetBool("Roll", false);
+    }
+    
     public void KnifeEvent()
     {
         // 范围检测
@@ -281,6 +293,7 @@ public class Player : MonoBehaviour
         {
             enemy.GetComponent<Zombie>().Wound(weapon.atk + baseAtk);
         }
+        animator.SetBool("Attacking", false);
     }
 
     public void ShootEvent()
@@ -305,7 +318,7 @@ public class Player : MonoBehaviour
         {
             // 起身开火
             Debug.DrawRay(hungGunFirePos.position, hungGunFirePos.forward * 1000, Color.red);
-            GameObject bullet = Instantiate(Resources.Load<GameObject>("Prefabs/Bullet/Bullet"));
+            GameObject bullet = Instantiate(Resources.Load<GameObject>("Prefabs/Bullet/Bullet"), hungGunFirePos);
             bullet.transform.position = hungGunFirePos.position;
             bullet.transform.rotation = hungGunFirePos.rotation;
             Destroy(bullet, 0.5f);
@@ -398,11 +411,10 @@ public class Player : MonoBehaviour
                 }
 
                 animator.runtimeAnimatorController = Instantiate(Resources.Load<RuntimeAnimatorController>("Animator/Role/HandGun"));
-                if (isCrouch)
-                    Crouch();
+
                 // 其他武器现实子弹数
                 UIManager.Instance.GetPanel<GamePanel>().ShowBulletInfo();
-
+                UIManager.Instance.GetPanel<GamePanel>().RefreshBulletImg();
                 UpdateInfoToPanel();
                 break;
             case 3:
@@ -419,8 +431,6 @@ public class Player : MonoBehaviour
                 }
                 
                 animator.runtimeAnimatorController = Instantiate(Resources.Load<RuntimeAnimatorController>("Animator/Role/Knife"));
-                if (isCrouch)
-                    Crouch();
 
                 UpdateInfoToPanel();
                 // 近战武器隐藏子弹信息
@@ -433,9 +443,9 @@ public class Player : MonoBehaviour
 
     private void UpdateInfoToPanel()
     {
-        UIManager.Instance.GetPanel<GamePanel>().UpdateBullet(weapon.nowBulletCount, hanGunBullets);
-        UIManager.Instance.GetPanel<GamePanel>().UpdatePlayerHp(hp, maxHp);
-        UIManager.Instance.GetPanel<GamePanel>().UpdateAtk(baseAtk);
+        UIManager.Instance.GetPanel<GamePanel>()?.UpdateBullet(weapon.nowBulletCount, hanGunBullets);
+        UIManager.Instance.GetPanel<GamePanel>()?.UpdatePlayerHp(hp, maxHp);
+        UIManager.Instance.GetPanel<GamePanel>()?.UpdateAtk(baseAtk);
     }
 
     #region 补给相关
@@ -457,7 +467,7 @@ public class Player : MonoBehaviour
     public bool RestoreBullet()
     {
         // 禁止满子弹加子弹
-        if (mainBullets == DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].mainBullets || hanGunBullets == DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].hanGunBullets)
+        if (mainBullets == DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].mainBullets && hanGunBullets == DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].hanGunBullets)
         {
             UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("后备弹药已满");
             return false;

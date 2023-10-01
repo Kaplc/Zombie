@@ -57,7 +57,7 @@ public class GamePanel : BasePanel
 
         if (isOnRefreshBulletImg)
         {
-            imgBulletCd.fillAmount = Mathf.Clamp(imgBulletCd.fillAmount + Time.deltaTime, 0.001f, 1);
+            imgBulletCd.fillAmount = Mathf.Clamp(imgBulletCd.fillAmount + Time.deltaTime * 2, 0.001f, 1);
             // 刷新完成
             if (imgBulletCd.fillAmount >= 1)
             {

@@ -2847,10 +2847,9 @@ MonoBehaviour:
   animator: {fileID: 0}
   moveSpeed: 10
   handPos: {fileID: 2112119741717153336}
-  remainingBullets: 70
   hungGunFirePos: {fileID: 127306502}
   hungGunFirePosCrouch: {fileID: 1467437494}
-  reloading: 0
+  transitionSpeed: 3.75
 --- !u!1 &2112119741717108198
 GameObject:
   m_ObjectHideFlags: 0

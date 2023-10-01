@@ -47,7 +47,7 @@ public class Core : MonoBehaviour
 
    public void UpdateHpForPanel()
    {
-      UIManager.Instance.GetPanel<GamePanel>().UpdateCoreHp(hp, maxHp);
+      UIManager.Instance.GetPanel<GamePanel>()?.UpdateCoreHp(hp, maxHp);
    }
 
    public void Wound(float woundHp)

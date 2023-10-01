@@ -1,4 +1,4 @@
 [
-  {"id":0,"name":"失落村庄","path":"MapImg/0","introduce":"城郊的村庄已经被大量感染者攻陷, 比较危险", "startMoney": 200, "coreHp": 200, "count": 100, "waveNum": 5, "waveCd": 15, "eachCd": 1},
+  {"id":0,"name":"失落村庄","path":"MapImg/0","introduce":"城郊的村庄已经被大量感染者攻陷, 比较危险", "startMoney": 200, "coreHp": 9999, "count": 2, "waveNum": 5, "waveCd": 15, "eachCd": 1},
   {"id":1,"name":"地图名称2","path":"MapImg/1","introduce":"987654321",  "startMoney": 200, "coreHp": 500, "count": 500, "waveNum": 5, "waveCd": 20, "eachCd": 1}
 ]
