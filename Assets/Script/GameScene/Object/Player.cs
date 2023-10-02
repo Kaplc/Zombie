@@ -72,6 +72,7 @@ public class Player : MonoBehaviour
 
         if (GameManger.Instance.isGameOver || GameManger.Instance.showMenu)
         {
+            animator.SetBool("Attack", false);
             return;
         }
 
@@ -152,10 +153,6 @@ public class Player : MonoBehaviour
 
     private void Attack()
     {
-        if (GameManger.Instance.isGameOver)
-        {
-            return;
-        }
         switch (weapon.type)
         {
             case E_Weapon.Knife:

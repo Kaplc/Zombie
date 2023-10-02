@@ -14,12 +14,13 @@ public class CameraFollow : MonoBehaviour
     public float followSpeed;
 
     private float currRota; // 当前开火点的角度
-    public float speed;
-    private Vector3 newRota;
+    private Vector3 worldPoint;
+    private Camera mainCamera;
 
     private void Start()
     {
-        newRota = new Vector3(0, 0, 0);
+        worldPoint = new Vector3(0, 0, 2000);
+        mainCamera = Camera.main;
     }
 
     private void Update()
@@ -31,7 +32,9 @@ public class CameraFollow : MonoBehaviour
         
         // 镜头随鼠标上下移动
         lookAtY += Input.GetAxis("Mouse Y") * Time.deltaTime;
-
+        worldPoint.x = Input.mousePosition.x;
+        worldPoint.y = Input.mousePosition.y + 50;
+        GameManger.Instance.playerCpm.firePos.LookAt(mainCamera.ScreenToWorldPoint(worldPoint));
         // 限制上下移动的范围
         lookAtY = Mathf.Clamp(lookAtY, 1, 3);
     }
