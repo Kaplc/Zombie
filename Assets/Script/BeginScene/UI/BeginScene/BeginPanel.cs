@@ -28,7 +28,7 @@ public class BeginPanel : BasePanel
         });
         btnAbout.onClick.AddListener(() =>
         {
-            
+            UIManager.Instance.Show<AboutPanel>();
         });
         btnQuit.onClick.AddListener(() =>
         {

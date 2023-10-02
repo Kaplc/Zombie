@@ -95,9 +95,9 @@ public class Zombie : MonoBehaviour
         // 添加状态机
         animator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>(info.animatorPath);
 
-        hp = info.hp;
-        atk = info.atk;
-        atkCd = info.atkCd;
+        hp = info.hp + info.hp *DataManager.Instance.nowMapID;
+        atk = info.atk + info.atk * DataManager.Instance.nowMapID;
+        atkCd = info.atkCd - DataManager.Instance.nowMapID;
         money = info.money;
 
         // 设置停止导航距离

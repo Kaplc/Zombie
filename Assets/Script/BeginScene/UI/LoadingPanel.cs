@@ -41,7 +41,7 @@ public class LoadingPanel : BasePanel
 
     private IEnumerator Loading()
     {
-        ao = SceneManager.LoadSceneAsync("GameSceneCountrySide");
+        ao = SceneManager.LoadSceneAsync("GameSceneCountrySide" +DataManager.Instance.nowMapID);
         // 关闭自动进入场景
         ao.allowSceneActivation = false;
 

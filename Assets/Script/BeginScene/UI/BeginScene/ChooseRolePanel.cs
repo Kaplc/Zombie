@@ -11,6 +11,7 @@ public class ChooseRolePanel : BasePanel
     public Button btnStart;
     public Button btnUnlock;
     public Text txMoney;
+    public Text txAttribute;
 
     public Animator cameraAnimator;
 
@@ -53,6 +54,7 @@ public class ChooseRolePanel : BasePanel
                 ++DataManager.Instance.nowRoleID > DataManager.Instance.roleInfos.Count - 1
                     ? 0
                     : DataManager.Instance.nowRoleID;
+            
             CreateRole();
         });
         btnUnlock.onClick.AddListener(() =>
@@ -78,6 +80,8 @@ public class ChooseRolePanel : BasePanel
         btnUnlock.gameObject.SetActive(false);
         // 初始化角色
         CreateRole();
+        
+        
     }
 
     private void CreateRole()
@@ -94,10 +98,10 @@ public class ChooseRolePanel : BasePanel
 
         role = Instantiate(Resources.Load<GameObject>(DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].path),
             Main.Instance.showRolePos);
-        
+
         // 失活角色脚本防止交互
         role.GetComponent<Player>().enabled = false;
-        
+
         if (!DataManager.Instance.playerInfo.unlockRoles.Contains(DataManager.Instance.nowRoleID))
         {
             // 未解锁显示解锁按钮
@@ -107,5 +111,13 @@ public class ChooseRolePanel : BasePanel
             // 禁用开始按钮
             btnStart.gameObject.SetActive(false);
         }
+        
+        // 更新角色属性
+        UpdateRoleAttribute(DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].baseAtk, DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].mainBullets);
+    }
+
+    public void UpdateRoleAttribute(int baseAtk, int bullets)
+    {
+        txAttribute.text = $"基础攻击力+{baseAtk}\n携带子弹:{bullets}";
     }
 }
