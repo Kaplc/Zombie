@@ -48,8 +48,8 @@ public class GameManger: MonoBehaviour
     private void Start()
     {
         // 初始化游戏数据
-        money = DataManager.Instance.mapInfo.startMoney; // 初始金钱
-        count = DataManager.Instance.mapInfo.count; // 数量
+        money = DataManager.Instance.mapInfos[DataManager.Instance.nowMapID].startMoney; // 初始金钱
+        count = DataManager.Instance.mapInfos[DataManager.Instance.nowMapID].count; // 数量
         // 初始化面板数据
         UIManager.Instance.GetPanel<GamePanel>().UpdateCount(count);
         UIManager.Instance.GetPanel<GamePanel>().UpdateGameMoney(money);

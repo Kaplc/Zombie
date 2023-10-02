@@ -13,7 +13,7 @@ public class Core : MonoBehaviour
 
    private void Start()
    {
-      maxHp = hp = DataManager.Instance.mapInfo.coreHp;
+      maxHp = hp = DataManager.Instance.mapInfos[DataManager.Instance.nowMapID].coreHp;
       UpdateHpForPanel();
    }
 
