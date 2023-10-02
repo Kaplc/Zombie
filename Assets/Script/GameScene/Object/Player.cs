@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
     // 动作相关
     public Animator animator;
     public float moveSpeed;
-    
+
     // 轴向
     private float xDir;
     private float yDir;
@@ -32,12 +32,14 @@ public class Player : MonoBehaviour
     private float baseAtk;
     private float maxHp;
     private float hp;
-    
+
     // 动画过度协程
     public float transitionSpeed;
     private Coroutine addWeightCoroutine;
     private Coroutine subWeightCoroutine;
-    
+
+    private AudioSource machineGunAudioSource;
+    private AudioSource hunGunAudioSource;
     
     private void Start()
     {
@@ -55,6 +57,13 @@ public class Player : MonoBehaviour
         RestoreBullet();
 
         UIManager.Instance.GetPanel<GamePanel>().UpdatePlayerHp(hp, maxHp);
+
+        hunGunAudioSource = gameObject.AddComponent<AudioSource>();
+        hunGunAudioSource.clip = Resources.Load<AudioClip>("Music/Gun");
+
+        machineGunAudioSource = gameObject.AddComponent<AudioSource>();
+        machineGunAudioSource.clip = Resources.Load<AudioClip>("Music/Tower");
+
     }
 
     private void Update()
@@ -65,10 +74,10 @@ public class Player : MonoBehaviour
         {
             return;
         }
-        
+
         // 读取数字键换武器
         GetKeyNumToChangeWeapon();
-        
+
         // 攻击
         switch (weapon.type)
         {
@@ -94,6 +103,7 @@ public class Player : MonoBehaviour
                         UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("弹药不足");
                     }
                 }
+
                 break;
             case E_Weapon.MachineGun:
                 // 连射
@@ -113,7 +123,7 @@ public class Player : MonoBehaviour
                         Attack();
                     }
                     // 无子弹提示
-                    else if (weapon.nowBulletCount == 0 && mainBullets == 0 )
+                    else if (weapon.nowBulletCount == 0 && mainBullets == 0)
                     {
                         UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("弹药不足");
                     }
@@ -123,16 +133,17 @@ public class Player : MonoBehaviour
                 {
                     animator.SetBool("Attack", false);
                 }
+
                 break;
             case E_Weapon.RocketLauncher:
                 break;
         }
-        
+
         // 手动装弹
         if (Input.GetKeyDown(KeyCode.R) && weapon.nowBulletCount != weapon.bulletCount)
         {
             // 当前武器有后备子弹才能重新装填
-            if (hanGunBullets > 0 && weapon.type == E_Weapon.HandGun ||mainBullets > 0 && weapon.type == E_Weapon.MachineGun)
+            if (hanGunBullets > 0 && weapon.type == E_Weapon.HandGun || mainBullets > 0 && weapon.type == E_Weapon.MachineGun)
             {
                 animator.SetBool("Reloading", true);
             }
@@ -141,6 +152,10 @@ public class Player : MonoBehaviour
 
     private void Attack()
     {
+        if (GameManger.Instance.isGameOver)
+        {
+            return;
+        }
         switch (weapon.type)
         {
             case E_Weapon.Knife:
@@ -154,7 +169,6 @@ public class Player : MonoBehaviour
             case E_Weapon.RocketLauncher:
                 break;
         }
-        
     }
 
     public void Wound(float num)
@@ -203,7 +217,7 @@ public class Player : MonoBehaviour
         {
             Crouch();
         }
-        
+
         // 按x翻滚: 在装弹和攻击时无效
         if (Input.GetKeyDown(KeyCode.X) && !animator.GetBool("Reloading") && !animator.GetBool("Attacking"))
         {
@@ -221,7 +235,7 @@ public class Player : MonoBehaviour
             // 镜头随人物旋转
             transform.rotation *= Quaternion.Euler(transform.up * Input.GetAxis("Mouse X"));
         }
-        
+
         // 任意方向移动时切换为移动攻击层：不在roll时切换
         if ((xDir != 0 || yDir != 0) && !animator.GetBool("Reloading") && !animator.GetBool("Roll"))
         {
@@ -230,6 +244,7 @@ public class Player : MonoBehaviour
             {
                 subWeightCoroutine = StartCoroutine(SubWeight("MoveReload"));
             }
+
             addWeightCoroutine = StartCoroutine(AddWeight("MoveShoot"));
         }
         // 移动装弹层：不在roll时切换
@@ -260,7 +275,7 @@ public class Player : MonoBehaviour
                 }
             }
         }
-        
+
 
         // 人物移动
         animator.SetFloat("XSpeed", Mathf.Lerp(animator.GetFloat("XSpeed"), xDir, Time.deltaTime * moveSpeed));
@@ -272,7 +287,7 @@ public class Player : MonoBehaviour
         isCrouch = !isCrouch;
         animator.SetBool("Crouch", isCrouch);
     }
-    
+
     private void Roll()
     {
         StopAllCoroutine();
@@ -292,7 +307,8 @@ public class Player : MonoBehaviour
     {
         while (animator.GetLayerWeight(animator.GetLayerIndex(layerName)) < 1f)
         {
-            animator.SetLayerWeight(animator.GetLayerIndex(layerName), Mathf.Lerp(animator.GetLayerWeight(animator.GetLayerIndex(layerName)), 1, Time.deltaTime * transitionSpeed));
+            animator.SetLayerWeight(animator.GetLayerIndex(layerName),
+                Mathf.Lerp(animator.GetLayerWeight(animator.GetLayerIndex(layerName)), 1, Time.deltaTime * transitionSpeed));
             yield return null;
         }
     }
@@ -306,11 +322,12 @@ public class Player : MonoBehaviour
     {
         while (animator.GetLayerWeight(animator.GetLayerIndex(layerName)) > 0.001f)
         {
-            animator.SetLayerWeight(animator.GetLayerIndex(layerName), Mathf.Lerp(animator.GetLayerWeight(animator.GetLayerIndex(layerName)), 0, Time.deltaTime * transitionSpeed));
+            animator.SetLayerWeight(animator.GetLayerIndex(layerName),
+                Mathf.Lerp(animator.GetLayerWeight(animator.GetLayerIndex(layerName)), 0, Time.deltaTime * transitionSpeed));
             yield return null;
         }
     }
-    
+
     // 停止所有过渡协程
     private void StopAllCoroutine()
     {
@@ -324,6 +341,7 @@ public class Player : MonoBehaviour
             StopCoroutine(subWeightCoroutine);
         }
     }
+
     #endregion
 
     #region 动作事件
@@ -332,7 +350,7 @@ public class Player : MonoBehaviour
     {
         animator.SetBool("Roll", false);
     }
-    
+
     public void KnifeEvent()
     {
         // 范围检测
@@ -342,6 +360,7 @@ public class Player : MonoBehaviour
         {
             enemy.GetComponent<Zombie>().Wound(weapon.atk + baseAtk);
         }
+
         animator.SetBool("Attacking", false);
     }
 
@@ -351,7 +370,7 @@ public class Player : MonoBehaviour
         {
             return;
         }
-        
+
         if (isCrouch)
         {
             // 蹲下开火
@@ -391,6 +410,26 @@ public class Player : MonoBehaviour
         UIManager.Instance.GetPanel<GamePanel>().RefreshBulletImg();
         // 更新面板子弹数
         UpdateInfoToPanel();
+
+        if (weapon.type == E_Weapon.HandGun)
+        {
+            hunGunAudioSource.volume = DataManager.Instance.musicData.soundVolume;
+            hunGunAudioSource.mute = !DataManager.Instance.musicData.soundOpen;
+            hunGunAudioSource.Play();
+        }else if (weapon.type == E_Weapon.MachineGun)
+        {
+            machineGunAudioSource.volume = DataManager.Instance.musicData.soundVolume;
+            machineGunAudioSource.mute = !DataManager.Instance.musicData.soundOpen;
+            // 音效裁剪
+            if (machineGunAudioSource.time >= 0.4f)
+            {
+                machineGunAudioSource.time = 0.15f;
+                machineGunAudioSource.Play();
+            }else if (!machineGunAudioSource.isPlaying)
+            {
+                machineGunAudioSource.Play();
+            }
+        }
     }
 
     public void EndReloadEvent()
@@ -429,7 +468,7 @@ public class Player : MonoBehaviour
                 hanGunBullets -= weapon.bulletCount;
             }
         }
-        
+
         UpdateInfoToPanel();
         animator.SetBool("Reloading", false);
     }
@@ -469,7 +508,7 @@ public class Player : MonoBehaviour
         {
             weapon.gameObject.SetActive(false);
         }
-        
+
         switch (weaponIndex)
         {
             case 1:
@@ -484,8 +523,9 @@ public class Player : MonoBehaviour
                     weapon = weaponBag[1].GetComponent<Weapon>();
                     weapon.gameObject.SetActive(true);
                 }
+
                 animator.runtimeAnimatorController = Instantiate(Resources.Load<RuntimeAnimatorController>("Animator/Role/MachineGun"));
-                
+
                 break;
             case 2:
                 // 没有副武器就创建有就取出
@@ -507,20 +547,23 @@ public class Player : MonoBehaviour
                 if (!weaponBag.ContainsKey(3))
                 {
                     weapon = Instantiate(Resources.Load<GameObject>("Prefabs/Weapon/weapon_knife"), handPos).GetComponent<Weapon>();
-                    weaponBag.Add(3,weapon.gameObject);
+                    weaponBag.Add(3, weapon.gameObject);
                 }
                 else
                 {
                     weapon = weaponBag[3].GetComponent<Weapon>();
                     weapon.gameObject.SetActive(true);
                 }
+
                 animator.runtimeAnimatorController = Instantiate(Resources.Load<RuntimeAnimatorController>("Animator/Role/Knife"));
                 break;
         }
+
         if (isCrouch)
         {
             animator.SetBool("Crouch", true);
         }
+
         // 其他武器现实子弹数
         UIManager.Instance.GetPanel<GamePanel>().ShowBulletInfo();
         UIManager.Instance.GetPanel<GamePanel>().RefreshBulletImg();
@@ -528,7 +571,7 @@ public class Player : MonoBehaviour
         if (weaponIndex == 3)
         {
             // 近战武器隐藏子弹信息
-            UIManager.Instance.GetPanel<GamePanel>().HideBulletInfo(); 
+            UIManager.Instance.GetPanel<GamePanel>().HideBulletInfo();
         }
     }
 
@@ -536,7 +579,7 @@ public class Player : MonoBehaviour
 
     private void UpdateInfoToPanel()
     {
-        UIManager.Instance.GetPanel<GamePanel>()?.UpdateBullet(weapon.nowBulletCount, weapon.type == E_Weapon.HandGun?hanGunBullets : mainBullets);
+        UIManager.Instance.GetPanel<GamePanel>()?.UpdateBullet(weapon.nowBulletCount, weapon.type == E_Weapon.HandGun ? hanGunBullets : mainBullets);
         UIManager.Instance.GetPanel<GamePanel>()?.UpdatePlayerHp(hp, maxHp);
         UIManager.Instance.GetPanel<GamePanel>()?.UpdateAtk(baseAtk);
     }
@@ -551,7 +594,7 @@ public class Player : MonoBehaviour
             UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("血量已满");
             return false;
         }
-        
+
         hp = maxHp;
         UpdateInfoToPanel();
         return true;
@@ -560,12 +603,13 @@ public class Player : MonoBehaviour
     public bool RestoreBullet()
     {
         // 禁止满子弹加子弹
-        if (mainBullets == DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].mainBullets && hanGunBullets == DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].hanGunBullets)
+        if (mainBullets == DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].mainBullets &&
+            hanGunBullets == DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].hanGunBullets)
         {
             UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("后备弹药已满");
             return false;
         }
-        
+
         mainBullets = DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].mainBullets;
         hanGunBullets = DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].hanGunBullets;
         UpdateInfoToPanel();
@@ -574,8 +618,9 @@ public class Player : MonoBehaviour
 
     public void AddAtk()
     {
-        baseAtk += 0.5f;
+        baseAtk += 0.25f;
         UpdateInfoToPanel();
     }
+
     #endregion
 }
