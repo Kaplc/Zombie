@@ -35,9 +35,11 @@ public class Player : MonoBehaviour
 
     // 动画过度协程
     public float transitionSpeed;
-    private Coroutine addWeightCoroutine;
-    private Coroutine subWeightCoroutine;
-
+    private Coroutine addMoveShootWeightCoroutine;
+    private Coroutine addReloadShootWeightCoroutine;
+    private Coroutine subMoveShootWeightCoroutine;
+    private Coroutine subReloadShootWeightCoroutine;
+    // 开枪音效组件
     private AudioSource machineGunAudioSource;
     private AudioSource hunGunAudioSource;
     
@@ -55,9 +57,9 @@ public class Player : MonoBehaviour
         maxHp = hp = DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].hp;
         baseAtk = DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].baseAtk;
         RestoreBullet();
-
+        // 初始化面板血量
         UIManager.Instance.GetPanel<GamePanel>().UpdatePlayerHp(hp, maxHp);
-
+        // 初始化音乐
         hunGunAudioSource = gameObject.AddComponent<AudioSource>();
         hunGunAudioSource.clip = Resources.Load<AudioClip>("Music/Gun");
 
@@ -153,6 +155,7 @@ public class Player : MonoBehaviour
 
     private void Attack()
     {
+        // 手枪和机枪有不同的动画状态机
         switch (weapon.type)
         {
             case E_Weapon.Knife:
@@ -239,19 +242,19 @@ public class Player : MonoBehaviour
             StopAllCoroutine();
             if (weapon.type != E_Weapon.Knife)
             {
-                subWeightCoroutine = StartCoroutine(SubWeight("MoveReload"));
+                subReloadShootWeightCoroutine = StartCoroutine(SubWeight("MoveReload"));
             }
 
-            addWeightCoroutine = StartCoroutine(AddWeight("MoveShoot"));
+            addMoveShootWeightCoroutine = StartCoroutine(AddWeight("MoveShoot"));
         }
         // 移动装弹层：不在roll时切换
         else if ((xDir != 0 || yDir != 0) && animator.GetBool("Reloading") && !animator.GetBool("Roll"))
         {
             StopAllCoroutine();
-            subWeightCoroutine = StartCoroutine(SubWeight("MoveShoot"));
+            subMoveShootWeightCoroutine = StartCoroutine(SubWeight("MoveShoot"));
             if (weapon.type != E_Weapon.Knife)
             {
-                addWeightCoroutine = StartCoroutine(AddWeight("MoveReload"));
+                addReloadShootWeightCoroutine = StartCoroutine(AddWeight("MoveReload"));
             }
         }
         // 停下攻击层： roll或者停下时切换
@@ -267,8 +270,8 @@ public class Player : MonoBehaviour
                 }
                 else
                 {
-                    subWeightCoroutine = StartCoroutine(SubWeight("MoveShoot"));
-                    subWeightCoroutine = StartCoroutine(SubWeight("MoveReload"));
+                    subMoveShootWeightCoroutine = StartCoroutine(SubWeight("MoveShoot"));
+                    subReloadShootWeightCoroutine = StartCoroutine(SubWeight("MoveReload"));
                 }
             }
         }
@@ -328,14 +331,24 @@ public class Player : MonoBehaviour
     // 停止所有过渡协程
     private void StopAllCoroutine()
     {
-        if (addWeightCoroutine != null)
+        if (addMoveShootWeightCoroutine != null)
         {
-            StopCoroutine(addWeightCoroutine);
+            StopCoroutine(addMoveShootWeightCoroutine);
         }
 
-        if (subWeightCoroutine != null)
+        if (addReloadShootWeightCoroutine != null)
         {
-            StopCoroutine(subWeightCoroutine);
+            StopCoroutine(addReloadShootWeightCoroutine);
+        }
+        
+        if (subReloadShootWeightCoroutine != null)
+        {
+            StopCoroutine(subReloadShootWeightCoroutine);
+        }
+        
+        if (subMoveShootWeightCoroutine != null)
+        {
+            StopCoroutine(subMoveShootWeightCoroutine);
         }
     }
 
@@ -555,7 +568,8 @@ public class Player : MonoBehaviour
                 animator.runtimeAnimatorController = Instantiate(Resources.Load<RuntimeAnimatorController>("Animator/Role/Knife"));
                 break;
         }
-
+        // 每次切换武器重置动画分层权重
+        StopAllCoroutine();
         if (isCrouch)
         {
             animator.SetBool("Crouch", true);

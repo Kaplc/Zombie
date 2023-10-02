@@ -29,13 +29,9 @@ public class LoadingPanel : BasePanel
     protected override void Update()
     {
         base.Update();
-
-        if (ao.progress < 0.9f)
-        {
-            time += Time.deltaTime * 0.25f;
-            UpdateLoadingImg(time);
-        }
         
+        time += Time.deltaTime * 0.25f;
+        UpdateLoadingImg(time);
     }
 
     protected override void Init()
@@ -55,10 +51,11 @@ public class LoadingPanel : BasePanel
             UIManager.Instance.Show<GamePanel>();
         };
 
-        while (!ao.isDone)
+        while (true)
         {
-            if (ao.progress >= 0.9f)
+            if (ao.isDone)
             {
+                ao.allowSceneActivation = true;
                 UpdateLoadingImg(1);
             }
 
