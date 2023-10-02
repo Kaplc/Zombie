@@ -5366,7 +5366,7 @@ GameObject:
   - component: {fileID: 89804602}
   - component: {fileID: 89804604}
   - component: {fileID: 89804603}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: showRolePos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5399,6 +5399,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 513e2be230f06524893afb5a931f2072, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 200
 --- !u!136 &89804604
 CapsuleCollider:
   m_ObjectHideFlags: 0
