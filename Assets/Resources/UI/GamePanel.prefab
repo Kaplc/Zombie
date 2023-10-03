@@ -2425,6 +2425,7 @@ MonoBehaviour:
   - {fileID: 6702582170910986099}
   txAtk: {fileID: 2035707479879789119}
   txFps: {fileID: 1895150882226346888}
+  lastRefreshFpsTime: 0
 --- !u!1 &8358673993206653317
 GameObject:
   m_ObjectHideFlags: 0
@@ -2615,7 +2616,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 5, y: 55}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 8, y: 8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5591052292942549932

@@ -30,11 +30,6 @@ public class GameManger: MonoBehaviour
     private void Awake()
     {
         instance = this;
-        // 创建玩家
-        player = Instantiate(Resources.Load<GameObject>(DataManager.Instance.roleInfo.path)).GetComponent<Transform>();
-        player.position = roleBornPos.position;
-        // 设置摄像机跟随
-        Camera.main.GetComponent<CameraFollow>().playerTransform = player;
         // 创建BGM
         bgm = new GameObject("BGM").AddComponent<AudioSource>();
         bgm.gameObject.AddComponent<BGMControl>();
@@ -47,6 +42,11 @@ public class GameManger: MonoBehaviour
 
     private void Start()
     {
+        // 创建玩家
+        player = Instantiate(Resources.Load<GameObject>(DataManager.Instance.roleInfo.path)).GetComponent<Transform>();
+        player.position = roleBornPos.position;
+        // 设置摄像机跟随
+        Camera.main.GetComponent<CameraFollow>().playerTransform = player;
         // 初始化游戏数据
         money = DataManager.Instance.mapInfos[DataManager.Instance.nowMapID].startMoney; // 初始金钱
         count = DataManager.Instance.mapInfos[DataManager.Instance.nowMapID].count; // 数量

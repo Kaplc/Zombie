@@ -389,12 +389,16 @@ public class Player : MonoBehaviour
             bullet.transform.position = crouchFirePos.position;
             bullet.transform.rotation = crouchFirePos.rotation;
             Destroy(bullet, 0.5f);
-            RaycastHit info;
 
             // 开枪射线检测
-            if (Physics.Raycast(crouchFirePos.position, crouchFirePos.forward, out info, 1000, 1 << LayerMask.NameToLayer("Enemy")))
+            if (Physics.Raycast(crouchFirePos.position, crouchFirePos.forward, out RaycastHit hitInfo, 1000, 1 << LayerMask.NameToLayer("Enemy")|1 << LayerMask.NameToLayer("Builtings")))
             {
-                info.transform.gameObject.GetComponent<Zombie>().Wound(weapon.atk + baseAtk);
+                //创建打击特效
+                GameObject hitEff = Instantiate(Resources.Load<GameObject>("Prefabs/Bullet/HitEff"), hitInfo.transform);
+                hitEff.transform.position = hitInfo.point;
+                hitEff.transform.rotation = Quaternion.LookRotation(hitInfo.normal);
+                Destroy(hitEff, 1f);
+                hitInfo.transform.gameObject.GetComponent<Zombie>()?.Wound(weapon.atk + baseAtk);
             }
         }
         else
@@ -405,12 +409,15 @@ public class Player : MonoBehaviour
             bullet.transform.position = firePos.position;
             bullet.transform.rotation = firePos.rotation;
             Destroy(bullet, 0.5f);
-            RaycastHit info;
 
             // 开枪射线检测
-            if (Physics.Raycast(firePos.position, firePos.forward, out info, 1000, 1 << LayerMask.NameToLayer("Enemy")))
+            if (Physics.Raycast(firePos.position, firePos.forward, out RaycastHit hitInfo, 1000, 1 << LayerMask.NameToLayer("Enemy")|1 << LayerMask.NameToLayer("Builtings")))
             {
-                info.transform.gameObject.GetComponent<Zombie>().Wound(weapon.atk + baseAtk);
+                GameObject hitEff = Instantiate(Resources.Load<GameObject>("Prefabs/Bullet/HitEff"), hitInfo.transform);
+                hitEff.transform.position = hitInfo.point;
+                hitEff.transform.rotation = Quaternion.LookRotation(hitInfo.normal);
+                Destroy(hitEff, 1f);
+                hitInfo.transform.gameObject.GetComponent<Zombie>()?.Wound(weapon.atk + baseAtk);
             }
         }
 
