@@ -21,7 +21,7 @@ public class ZombieBorn : MonoBehaviour
 
     private void Start()
     {
-        MapInfo mapInfo = DataManager.Instance.mapInfo;
+        MapInfo mapInfo = DataManager.Instance.mapInfos[DataManager.Instance.nowMapID];
         totalNum = mapInfo.count;
         eachCd = mapInfo.eachCd;
         waveNum = mapInfo.waveNum;

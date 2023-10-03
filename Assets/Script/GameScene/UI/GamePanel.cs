@@ -41,6 +41,10 @@ public class GamePanel : BasePanel
     
     // atk
     public Text txAtk;
+    
+    // fps
+    public Text txFps;
+    public float lastRefreshFpsTime;
 
     protected override void Init()
     {
@@ -63,6 +67,12 @@ public class GamePanel : BasePanel
             {
                 isOnRefreshBulletImg = false;
             }
+        }
+
+        if (Time.time - lastRefreshFpsTime > 0.5f)
+        {
+            lastRefreshFpsTime = Time.time;
+            txFps.text = $"fps:{(1f / Time.unscaledDeltaTime):F1}";
         }
     }
 

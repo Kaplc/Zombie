@@ -127,10 +127,10 @@ public class GameManger: MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         // 更新结束面板
-        UIManager.Instance.Show<EndPanel>().UpdateInfo(isWin?"胜利": "失败", DataManager.Instance.mapInfo.count - count);
+        UIManager.Instance.Show<EndPanel>().UpdateInfo(isWin?"胜利": "失败", DataManager.Instance.mapInfos[DataManager.Instance.nowMapID].count - count);
         UIManager.Instance.Hide<MenuPanel>();
         // 更新金币并保存
-        DataManager.Instance.playerInfo.money += (money - 200) / 10;
+        DataManager.Instance.playerInfo.money += DataManager.Instance.mapInfos[DataManager.Instance.nowMapID].count - count;
         DataManager.Instance.SavePlayerInfo();
     }
 
