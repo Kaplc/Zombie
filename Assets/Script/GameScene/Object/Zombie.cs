@@ -213,7 +213,7 @@ public class Zombie : MonoBehaviour
 
     public void DeadEvent()
     {
-        PoolManager.Instance.PushObject(gameObject);
+        
     }
 
     public void StartDamageEvent()

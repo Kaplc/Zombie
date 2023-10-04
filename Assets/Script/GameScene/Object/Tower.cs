@@ -57,12 +57,6 @@ public class Tower : MonoBehaviour
 
     private void Fire()
     {
-        // 死亡就停止攻击
-        if (target.GetComponent<Zombie>().isDead)
-        {
-            return;
-        }
-        
         // 开火转动炮管
         barrel.rotation *= Quaternion.AngleAxis(5f, Vector3.forward);
         // 头部锁定
@@ -137,6 +131,12 @@ public class Tower : MonoBehaviour
             
             lastFireTime = Time.time;
             target.GetComponent<Zombie>().Wound(1f);
+            
+            // 死亡就停止攻击
+            if (target.GetComponent<Zombie>().isDead)
+            {
+                target = null;
+            }
         }
     }
     /// <summary>
