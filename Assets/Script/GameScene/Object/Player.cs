@@ -52,7 +52,7 @@ public class Player : MonoBehaviour
     // 
     private Vector3 mousePosToWorldPos;
     private Vector3 mousePosToWorldPosForward;
-    
+
     private void Start()
     {
         animator = GetComponent<Animator>();
@@ -390,62 +390,121 @@ public class Player : MonoBehaviour
         {
             return;
         }
+
         // 根据鼠标位置生成开枪射线
         fireRayOrigin.x = Input.mousePosition.x;
         fireRayOrigin.y = Input.mousePosition.y;
         fireRayOrigin.z = 5;
-        
+
         fireRay.origin = Camera.main.ScreenToWorldPoint(fireRayOrigin);
         fireRay.direction = Camera.main.ScreenPointToRay(Input.mousePosition).direction;
 
         if (isCrouch)
         {
             // 蹲下开火
-            PoolManager.Instance.GetObject("Prefabs/Bullet/Bullet", bullet =>
+            GameObject bullet = PoolManager.Instance.GetObject("Prefabs/Bullet/Bullet");
+            if (bullet)
             {
                 bullet.SetActive(false);
                 bullet.transform.position = crouchFirePos.position;
                 bullet.transform.rotation = crouchFirePos.rotation;
                 bullet.SetActive(true);
-            });
+            }
+            else
+            {
+                ResourcesFrameWork.Instance.LoadAsync<GameObject>("Prefabs/Bullet/Bullet", resBullet =>
+                {
+                    bullet = Instantiate(resBullet);
+                    bullet.name = "Prefabs/Bullet/Bullet";
+                    bullet.transform.position = crouchFirePos.position;
+                    bullet.transform.rotation = crouchFirePos.rotation;
+                });
+            }
+
             // 枪口火焰
-            PoolManager.Instance.GetObject("Prefabs/Bullet/Muzzle", muzzle =>
+            GameObject muzzle = PoolManager.Instance.GetObject("Prefabs/Bullet/Muzzle");
+            if (muzzle)
             {
                 muzzle.transform.position = crouchFirePos.position;
                 muzzle.transform.rotation = crouchFirePos.rotation;
-            });
+            }
+            else
+            {
+                ResourcesFrameWork.Instance.LoadAsync<GameObject>("Prefabs/Bullet/Muzzle", resMuzzle =>
+                {
+                    muzzle = Instantiate(resMuzzle);
+                    bullet.name = "Prefabs/Bullet/Muzzle";
+                    muzzle.transform.position = crouchFirePos.position;
+                    muzzle.transform.rotation = crouchFirePos.rotation;
+                });
+            }
         }
         else
         {
             // 起身开火
-            PoolManager.Instance.GetObject("Prefabs/Bullet/Bullet", bullet =>
+            GameObject bullet = PoolManager.Instance.GetObject("Prefabs/Bullet/Bullet");
+            if (bullet)
             {
                 bullet.SetActive(false);
                 bullet.transform.position = firePos.position;
                 bullet.transform.rotation = firePos.rotation;
                 bullet.SetActive(true);
-            });
+            }
+            else
+            {
+                ResourcesFrameWork.Instance.LoadAsync<GameObject>("Prefabs/Bullet/Bullet", resBullet =>
+                {
+                    bullet = Instantiate(resBullet);
+                    bullet.name = "Prefabs/Bullet/Bullet";
+                    bullet.transform.position = firePos.position;
+                    bullet.transform.rotation = firePos.rotation;
+                });
+            }
+            
             // 枪口火焰
-            PoolManager.Instance.GetObject("Prefabs/Bullet/Muzzle", muzzle =>
+            GameObject muzzle = PoolManager.Instance.GetObject("Prefabs/Bullet/Muzzle");
+            if (muzzle)
             {
                 muzzle.transform.position = firePos.position;
                 muzzle.transform.rotation = firePos.rotation;
-            });
+            }
+            else
+            {
+                ResourcesFrameWork.Instance.LoadAsync<GameObject>("Prefabs/Bullet/Muzzle", resMuzzle =>
+                {
+                    muzzle = Instantiate(resMuzzle);
+                    muzzle.name = "Prefabs/Bullet/Muzzle";
+                    muzzle.transform.position = firePos.position;
+                    muzzle.transform.rotation = firePos.rotation;
+                });
+                
+            }
         }
         
         // 开枪射线检测, 朝向准星方向
         if (Physics.Raycast(fireRay, out RaycastHit hitInfo, 1000, 1 << LayerMask.NameToLayer("Enemy") | 1 << LayerMask.NameToLayer("Buildings")))
         {
             //创建打击特效
-            PoolManager.Instance.GetObject("Prefabs/Bullet/HitEff", hitEff =>
+            GameObject hitEff = PoolManager.Instance.GetObject("Prefabs/Bullet/HitEff");
+            if (hitEff)
             {
                 hitEff.transform.position = hitInfo.point;
                 hitEff.transform.rotation = Quaternion.LookRotation(hitInfo.normal);
-            });
-            
+            }
+            else
+            {
+                ResourcesFrameWork.Instance.LoadAsync<GameObject>("Prefabs/Bullet/HitEff", resHitEff =>
+                {
+                    hitEff = Instantiate(resHitEff);
+                    hitEff.name = "Prefabs/Bullet/HitEff";
+                    hitEff.transform.position = hitInfo.point;
+                    hitEff.transform.rotation = Quaternion.LookRotation(hitInfo.normal);
+                });
+            }
             // 受伤
             hitInfo.transform.gameObject.GetComponent<Zombie>()?.Wound(weapon.atk + baseAtk);
         }
+
         // 减少子弹
         weapon.SubBullet();
         // 刷新开火图标
@@ -587,7 +646,6 @@ public class Player : MonoBehaviour
                 animator.runtimeAnimatorController = Instantiate(Resources.Load<RuntimeAnimatorController>("Animator/Role/HandGun"));
                 break;
             case 3:
-
                 if (!weaponBag.ContainsKey(3))
                 {
                     weapon = Instantiate(Resources.Load<GameObject>("Prefabs/Weapon/weapon_knife"), handPos).GetComponent<Weapon>();

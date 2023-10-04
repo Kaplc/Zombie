@@ -12,18 +12,47 @@ public class Zombie : MonoBehaviour
     private NavMeshAgent agent;
     private CapsuleCollider capsuleCollider;
 
-    private float hp;
-    private float atkCd;
-    private float atk;
-    private float speed;
-    private int money;
+    public float hp;
+    public float atkCd;
+    public float atk;
+    public float speed;
+    public int money;
 
     private float lastAtkTime;
     private float lastLockTarTime; // 锁敌时间
 
     public bool isDead;
 
-    private Coroutine stopMoveCoroutine;
+    private Coroutine pushCoroutine;
+    private bool isAwake;
+
+    public Vector3 initPos;
+
+    private void OnEnable()
+    {
+        if (isAwake)
+        {
+            // 随机目标
+            if (Random.Range(1, 101) > 70)
+            {
+                target = GameManger.Instance.player.transform;
+            }
+            else
+            {
+                target = GameManger.Instance.core.transform;
+            }
+
+            isDead = false;
+            // 激活碰撞器
+            capsuleCollider.enabled = true;
+
+            if (pushCoroutine != null)
+            {
+                StopCoroutine(pushCoroutine);
+            }
+        }
+        
+    }
 
     private void Awake()
     {
@@ -32,20 +61,9 @@ public class Zombie : MonoBehaviour
         // 寻路导航
         agent = gameObject.GetComponent<NavMeshAgent>();
         // 碰撞器
-        capsuleCollider = gameObject.GetComponent<CapsuleCollider>();
-    }
-
-    private void Start()
-    {
-        // 随机目标
-        if (Random.Range(1, 101) > 70)
-        {
-            target = GameManger.Instance.player;
-        }
-        else
-        {
-            target = GameManger.Instance.core.transform;
-        }
+        capsuleCollider = gameObject.GetComponent<CapsuleCollider>();  
+        
+        isAwake = true;
     }
 
     private void Update()
@@ -73,7 +91,7 @@ public class Zombie : MonoBehaviour
             // 攻击自动转向
             transform.LookAt(target);
         }
-
+        
         // 已经可以移动时, 3秒重新索敌
         if (Vector3.Distance(transform.position, target.position) > 3 && Time.time - lastLockTarTime >= 2 && animator.GetBool("Walk"))
         {
@@ -112,9 +130,11 @@ public class Zombie : MonoBehaviour
     {
         // 移动动画
         animator.SetBool("Walk", true);
-
-        // 设置目标
-        agent.SetDestination(target.position);
+        if (agent.isActiveAndEnabled)
+        {
+            // 设置目标
+            agent.SetDestination(target.position);
+        }
     }
 
     public void Wound(float atk)
@@ -136,20 +156,28 @@ public class Zombie : MonoBehaviour
     private void Dead()
     {
         isDead = true;
-        
-        // 移除碰撞器
-        Destroy(capsuleCollider);
-        capsuleCollider = null;
+        // 失活碰撞器
+        capsuleCollider.enabled = false;
         // 死亡动画
         animator.SetBool("Dead", true);
         // 减少数量
         GameManger.Instance.SubCount();
         // 按照攻击能力加钱
         GameManger.Instance.AddOrSubMoney(money);
-        
-        Destroy(gameObject, 5);
+        pushCoroutine = StartCoroutine(PushCoroutine());
     }
 
+    private IEnumerator PushCoroutine()
+    {
+        yield return new WaitForSeconds(5f);
+        Push();
+    }
+    
+    private void Push()
+    {
+        PoolManager.Instance.PushObject(gameObject);
+    }
+    
     private void Attack()
     {
         // 攻击动画
@@ -177,7 +205,7 @@ public class Zombie : MonoBehaviour
             Collider[] colliders = Physics.OverlapSphere(transform.position + transform.forward + transform.up, 2, 1 << LayerMask.NameToLayer("Core"));
             if (colliders.Length != 0)
             {
-                target.GetComponent<Core>().Wound(atk);
+                target.GetComponent<Core>()?.Wound(atk);
             }
         }
             
@@ -185,6 +213,7 @@ public class Zombie : MonoBehaviour
 
     public void DeadEvent()
     {
+        PoolManager.Instance.PushObject(gameObject);
     }
 
     public void StartDamageEvent()

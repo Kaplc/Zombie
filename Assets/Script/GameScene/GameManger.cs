@@ -9,9 +9,8 @@ public class GameManger: MonoBehaviour
     private static GameManger instance;
     
     public Transform roleBornPos;
-    public Transform player;
-    public Player playerCpm;
-    
+    public GameObject player;
+
     public Core core;
     public int count;
     public int money;
@@ -42,14 +41,12 @@ public class GameManger: MonoBehaviour
         acZombieTide = Resources.Load<AudioClip>("Music/尸潮来袭");
         // 动态生成玩家出生点
         roleBornPos = new GameObject("RoleBornPos").GetComponent<Transform>();
-        roleBornPos.transform.position = new Vector3(245f,29f,223f);
+        roleBornPos.transform.position = new Vector3(245f,30f,223f);
         // 创建玩家
-        player = Instantiate(Resources.Load<GameObject>(DataManager.Instance.roleInfo.path)).GetComponent<Transform>();
-        playerCpm = player.GetComponent<Player>();
-        player.gameObject.transform.position = roleBornPos.position;
+        player = Instantiate(Resources.Load<GameObject>(DataManager.Instance.roleInfo.path), roleBornPos);
         // 设置摄像机跟随
         cameraFollow = Camera.main.GetComponent<CameraFollow>();
-        cameraFollow.playerTransform = player;
+        cameraFollow.playerTransform = player.transform;
     }
 
     private void Start()
@@ -60,10 +57,17 @@ public class GameManger: MonoBehaviour
         // 初始化面板数据
         UIManager.Instance.GetPanel<GamePanel>().UpdateCount(count);
         UIManager.Instance.GetPanel<GamePanel>().UpdateGameMoney(money);
+        
+        Invoke("SetPlayerPos", 1f);
     }
 
+    private void SetPlayerPos()
+    {
+        player.transform.localPosition = Vector3.zero;
+    }
     private void Update()
     {
+        
         // esc打开菜单
         if (Input.GetKeyDown(KeyCode.Escape) && !isGameOver)
         {

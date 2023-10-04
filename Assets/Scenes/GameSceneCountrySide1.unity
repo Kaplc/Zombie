@@ -30189,6 +30189,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d2df23845e0e504d88e9e9977bd64d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  roleBornPos: {fileID: 0}
   player: {fileID: 0}
   playerCpm: {fileID: 0}
   core: {fileID: 1720512793}

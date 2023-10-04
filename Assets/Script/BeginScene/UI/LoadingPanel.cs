@@ -30,7 +30,7 @@ public class LoadingPanel : BasePanel
     {
         base.Update();
         
-        time += Time.deltaTime * 0.25f;
+        time += Time.deltaTime * 0.5f;
         UpdateLoadingImg(time);
     }
 

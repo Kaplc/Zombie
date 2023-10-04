@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
 public class ZombieBorn : MonoBehaviour
@@ -55,9 +56,25 @@ public class ZombieBorn : MonoBehaviour
         {
             return;
         }
-
-        zombieInfo = DataManager.Instance.zombieInfos[Random.Range(0, DataManager.Instance.zombieInfos.Count - 1)];
-        Instantiate(Resources.Load<GameObject>(zombieInfo.path), bornPos[Random.Range(0, bornPos.Count - 1)]).AddComponent<Zombie>().Init(zombieInfo);
+        // 随机僵尸属性
+        zombieInfo = DataManager.Instance.zombieInfos[Random.Range(0, DataManager.Instance.zombieInfos.Count)];
+        
+        GameObject zombie = PoolManager.Instance.GetObject(zombieInfo.path);
+        if (zombie)
+        {
+            zombie.GetComponent<NavMeshAgent>().enabled = false;
+            zombie.transform.SetParent(bornPos[Random.Range(0, bornPos.Count)]);
+            zombie.transform.localPosition = Vector3.zero;
+            zombie.GetComponent<NavMeshAgent>().enabled = true;
+            zombie.GetComponent<Zombie>().Init(zombieInfo);
+        }
+        else
+        {
+            zombie = Instantiate(Resources.Load<GameObject>(zombieInfo.path),bornPos[Random.Range(0, bornPos.Count)]);
+            zombie.AddComponent<Zombie>().Init(zombieInfo);
+            zombie.name = zombieInfo.path;
+        }
+        
         surplusNum--;
     }
 

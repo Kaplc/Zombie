@@ -26,7 +26,7 @@ public class ChooseRolePanel : BasePanel
         {
             UIManager.Instance.Hide<ChooseRolePanel>(true, () =>
             {
-                Destroy(role.gameObject);
+                Destroy(role);
                 DataManager.Instance.RecordGameInfo();
                 UIManager.Instance.Show<ChooseMapPanel>();
             });
@@ -54,7 +54,7 @@ public class ChooseRolePanel : BasePanel
                 ++DataManager.Instance.nowRoleID > DataManager.Instance.roleInfos.Count - 1
                     ? 0
                     : DataManager.Instance.nowRoleID;
-            
+
             CreateRole();
         });
         btnUnlock.onClick.AddListener(() =>
@@ -80,8 +80,6 @@ public class ChooseRolePanel : BasePanel
         btnUnlock.gameObject.SetActive(false);
         // 初始化角色
         CreateRole();
-        
-        
     }
 
     private void CreateRole()
@@ -111,9 +109,10 @@ public class ChooseRolePanel : BasePanel
             // 禁用开始按钮
             btnStart.gameObject.SetActive(false);
         }
-        
+
         // 更新角色属性
-        UpdateRoleAttribute(DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].baseAtk, DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].mainBullets);
+        UpdateRoleAttribute(DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].baseAtk,
+            DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].mainBullets);
     }
 
     public void UpdateRoleAttribute(int baseAtk, int bullets)

@@ -57,6 +57,12 @@ public class Tower : MonoBehaviour
 
     private void Fire()
     {
+        // 死亡就停止攻击
+        if (target.GetComponent<Zombie>().isDead)
+        {
+            return;
+        }
+        
         // 开火转动炮管
         barrel.rotation *= Quaternion.AngleAxis(5f, Vector3.forward);
         // 头部锁定
@@ -71,19 +77,62 @@ public class Tower : MonoBehaviour
         // 满足开火cd和角度才开火
         if (Time.time - lastFireTime > fireCd && angelSure)
         {
-            PoolManager.Instance.GetObject("Prefabs/Bullet/Bullet", bullet =>
+            GameObject bullet = PoolManager.Instance.GetObject("Prefabs/Bullet/Bullet");
+            if (bullet)
             {
+                bullet.SetActive(false);
                 bullet.transform.position = barrel.position;
                 bullet.transform.rotation = head.rotation;
-            });
-            
+                bullet.SetActive(true);
+            }
+            else
+            {
+                ResourcesFrameWork.Instance.LoadAsync<GameObject>("Prefabs/Bullet/Bullet", resBullet =>
+                {
+                    bullet = Instantiate(resBullet);
+                    bullet.name = "Prefabs/Bullet/Bullet";
+                    bullet.transform.position = barrel.position;
+                    bullet.transform.rotation = head.rotation;
+                });
+            }
+            // 枪口火焰
+            GameObject muzzle = PoolManager.Instance.GetObject("Prefabs/Bullet/Muzzle");
+            if (muzzle)
+            {
+                muzzle.transform.position = barrel.position;
+                muzzle.transform.rotation = head.rotation;
+            }
+            else
+            {
+                ResourcesFrameWork.Instance.LoadAsync<GameObject>("Prefabs/Bullet/Muzzle", resMuzzle =>
+                {
+                    muzzle = Instantiate(resMuzzle);
+                    muzzle.name = "Prefabs/Bullet/Muzzle";
+                    muzzle.transform.position = barrel.position;
+                    muzzle.transform.rotation = head.rotation;
+                });
+                
+            }
             // 射线检测创建打击特效
             if (Physics.Raycast(head.position, head.forward, out hitInfo, 1000f, 1<< LayerMask.NameToLayer("Enemy")))
             {
-                GameObject hitEff = Instantiate(Resources.Load<GameObject>("Prefabs/Bullet/HitEff"), hitInfo.transform);
-                hitEff.transform.position = hitInfo.point;
-                hitEff.transform.rotation = Quaternion.LookRotation(hitInfo.normal);
-                Destroy(hitEff, 1f);
+                //创建打击特效
+                GameObject hitEff = PoolManager.Instance.GetObject("Prefabs/Bullet/HitEff");
+                if (hitEff)
+                {
+                    hitEff.transform.position = hitInfo.point;
+                    hitEff.transform.rotation = Quaternion.LookRotation(hitInfo.normal);
+                }
+                else
+                {
+                    ResourcesFrameWork.Instance.LoadAsync<GameObject>("Prefabs/Bullet/HitEff", resHitEff =>
+                    {
+                        hitEff = Instantiate(resHitEff);
+                        hitEff.name = "Prefabs/Bullet/HitEff";
+                        hitEff.transform.position = hitInfo.point;
+                        hitEff.transform.rotation = Quaternion.LookRotation(hitInfo.normal);
+                    });
+                }
             }
             
             lastFireTime = Time.time;

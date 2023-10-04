@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-
 public class PoolData
 {
     // 该容器的父对象
@@ -28,7 +27,9 @@ public class PoolData
         // 断开父子关系
         targetObject.transform.parent = null;
         // 从list移除
-        objectList.Remove(targetObject);
+        objectList.RemoveAt(0);
+        
+        targetObject.SetActive(true);
         return targetObject;
     }
 
@@ -58,9 +59,9 @@ public class PoolManager : BaseSingleton<PoolManager>
         poolObject = new GameObject("Pool");
     }
 
-    
+
     // 获得对象
-    public void GetObject(string fullName, UnityAction<GameObject> callBack)
+    public GameObject GetObject(string fullName)
     {
         // 初始化缓存池
         if (!poolObject) Init();
@@ -72,34 +73,14 @@ public class PoolManager : BaseSingleton<PoolManager>
             poolDic.Add(fullName, new PoolData(fullName, poolObject));
         }
 
-        if (poolDic[fullName].objectList.Count >0)
+        if (poolDic[fullName].objectList.Count > 0)
         {
-            callBack += gameObject =>
-            {
-                // 激活
-                gameObject.SetActive(true);
-            };
-            // 统一走回调
-            callBack.Invoke(poolDic[fullName].Get());
+            return poolDic[fullName].Get();
         }
-        else
-        {
-            // 异步加载资源
-            ResourcesFrameWork.Instance.LoadAsync<GameObject>(fullName, (gameObject) =>
-            {
-                // 加载的预设体要实例化才返回真正的GameObject
-                GameObject obj = GameObject.Instantiate(gameObject);
-                obj.name = fullName;
-                // 统一走回调
-                callBack.Invoke(obj);
-            });
-        }
+        
+        return null;
     }
 
-    public void GetObject(string fullName)
-    {
-        GetObject(fullName, gameObject => { });
-    }
     // 储存对象
     public void PushObject(GameObject gameObject)
     {

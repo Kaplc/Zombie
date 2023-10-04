@@ -8,7 +8,10 @@ public class Bullet : MonoBehaviour
     public ParticleSystem ps;
     public ParticleSystem beamPs;
     public TrailRenderer tr;
+    public string time;
 
+    private Coroutine coroutine;
+    
     private void OnEnable()
     {
         if (ps)
@@ -19,8 +22,13 @@ public class Bullet : MonoBehaviour
         }
         
         // 缓存池保存
-        Invoke("PushBullet", 3f);
+        // Invoke("PushBullet", 3f);
+        coroutine = StartCoroutine(PushCoroutine());
+    }
 
+    private void Start()
+    {
+        time = Time.time.ToString();
     }
 
     // Update is called once per frame
@@ -33,6 +41,7 @@ public class Bullet : MonoBehaviour
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Enemy") || other.gameObject.layer == LayerMask.NameToLayer("Buildings"))
         {
+            StopCoroutine(coroutine);
             PushBullet();
         }
     }
@@ -41,5 +50,10 @@ public class Bullet : MonoBehaviour
     {
         PoolManager.Instance.PushObject(gameObject);
     }
-    
+
+    private IEnumerator PushCoroutine()
+    {
+        yield return new WaitForSeconds(3f);
+        PushBullet();
+    }
 }
