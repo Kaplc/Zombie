@@ -23,13 +23,10 @@ public class PoolData
 
     public GameObject Get()
     {
-        Debug.Log(objectList.Count);
         // 获取末尾的对象
-        GameObject targetObject = objectList[objectList.Count - 1];
+        GameObject targetObject = objectList[0];
         // 断开父子关系
         targetObject.transform.parent = null;
-        // 激活
-        targetObject.SetActive(true);
         // 从list移除
         objectList.Remove(targetObject);
         return targetObject;
@@ -62,7 +59,6 @@ public class PoolManager : BaseSingleton<PoolManager>
     }
 
     
-    
     // 获得对象
     public void GetObject(string fullName, UnityAction<GameObject> callBack)
     {
@@ -78,6 +74,11 @@ public class PoolManager : BaseSingleton<PoolManager>
 
         if (poolDic[fullName].objectList.Count >0)
         {
+            callBack += gameObject =>
+            {
+                // 激活
+                gameObject.SetActive(true);
+            };
             // 统一走回调
             callBack.Invoke(poolDic[fullName].Get());
         }
@@ -86,9 +87,11 @@ public class PoolManager : BaseSingleton<PoolManager>
             // 异步加载资源
             ResourcesFrameWork.Instance.LoadAsync<GameObject>(fullName, (gameObject) =>
             {
-                GameObject.Instantiate(gameObject).name = fullName;
+                // 加载的预设体要实例化才返回真正的GameObject
+                GameObject obj = GameObject.Instantiate(gameObject);
+                obj.name = fullName;
                 // 统一走回调
-                callBack.Invoke(gameObject);
+                callBack.Invoke(obj);
             });
         }
     }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -27,6 +28,8 @@ public class Player : MonoBehaviour
     // 开火点
     public Transform firePos;
     public Transform crouchFirePos;
+    private Vector3 fireRayOrigin;
+    private Ray fireRay;
 
     // 属性
     private float baseAtk;
@@ -38,10 +41,17 @@ public class Player : MonoBehaviour
     private Coroutine addMoveShootWeightCoroutine;
     private Coroutine addReloadShootWeightCoroutine;
     private Coroutine subMoveShootWeightCoroutine;
+
     private Coroutine subReloadShootWeightCoroutine;
+
     // 开枪音效组件
     private AudioSource machineGunAudioSource;
+
     private AudioSource hunGunAudioSource;
+
+    // 
+    private Vector3 mousePosToWorldPos;
+    private Vector3 mousePosToWorldPosForward;
     
     private void Start()
     {
@@ -65,7 +75,6 @@ public class Player : MonoBehaviour
 
         machineGunAudioSource = gameObject.AddComponent<AudioSource>();
         machineGunAudioSource.clip = Resources.Load<AudioClip>("Music/Tower");
-
     }
 
     private void Update()
@@ -128,6 +137,7 @@ public class Player : MonoBehaviour
                     // 无子弹提示
                     else if (weapon.nowBulletCount == 0 && mainBullets == 0)
                     {
+                        animator.SetBool("Attack", false);
                         UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("弹药不足");
                     }
                 }
@@ -340,12 +350,12 @@ public class Player : MonoBehaviour
         {
             StopCoroutine(addReloadShootWeightCoroutine);
         }
-        
+
         if (subReloadShootWeightCoroutine != null)
         {
             StopCoroutine(subReloadShootWeightCoroutine);
         }
-        
+
         if (subMoveShootWeightCoroutine != null)
         {
             StopCoroutine(subMoveShootWeightCoroutine);
@@ -380,47 +390,62 @@ public class Player : MonoBehaviour
         {
             return;
         }
+        // 根据鼠标位置生成开枪射线
+        fireRayOrigin.x = Input.mousePosition.x;
+        fireRayOrigin.y = Input.mousePosition.y;
+        fireRayOrigin.z = 5;
+        
+        fireRay.origin = Camera.main.ScreenToWorldPoint(fireRayOrigin);
+        fireRay.direction = Camera.main.ScreenPointToRay(Input.mousePosition).direction;
 
         if (isCrouch)
         {
             // 蹲下开火
-            Debug.DrawRay(crouchFirePos.position, crouchFirePos.forward * 1000, Color.red);
-            GameObject bullet = Instantiate(Resources.Load<GameObject>("Prefabs/Bullet/Bullet"));
-            bullet.transform.position = crouchFirePos.position;
-            bullet.transform.rotation = crouchFirePos.rotation;
-            Destroy(bullet, 0.5f);
-
-            // 开枪射线检测
-            if (Physics.Raycast(crouchFirePos.position, crouchFirePos.forward, out RaycastHit hitInfo, 1000, 1 << LayerMask.NameToLayer("Enemy")|1 << LayerMask.NameToLayer("Builtings")))
+            PoolManager.Instance.GetObject("Prefabs/Bullet/Bullet", bullet =>
             {
-                //创建打击特效
-                GameObject hitEff = Instantiate(Resources.Load<GameObject>("Prefabs/Bullet/HitEff"), hitInfo.transform);
-                hitEff.transform.position = hitInfo.point;
-                hitEff.transform.rotation = Quaternion.LookRotation(hitInfo.normal);
-                Destroy(hitEff, 1f);
-                hitInfo.transform.gameObject.GetComponent<Zombie>()?.Wound(weapon.atk + baseAtk);
-            }
+                bullet.SetActive(false);
+                bullet.transform.position = crouchFirePos.position;
+                bullet.transform.rotation = crouchFirePos.rotation;
+                bullet.SetActive(true);
+            });
+            // 枪口火焰
+            PoolManager.Instance.GetObject("Prefabs/Bullet/Muzzle", muzzle =>
+            {
+                muzzle.transform.position = crouchFirePos.position;
+                muzzle.transform.rotation = crouchFirePos.rotation;
+            });
         }
         else
         {
             // 起身开火
-            Debug.DrawRay(firePos.position, firePos.forward * 1000, Color.red);
-            GameObject bullet = Instantiate(Resources.Load<GameObject>("Prefabs/Bullet/Bullet"));
-            bullet.transform.position = firePos.position;
-            bullet.transform.rotation = firePos.rotation;
-            Destroy(bullet, 0.5f);
-
-            // 开枪射线检测
-            if (Physics.Raycast(firePos.position, firePos.forward, out RaycastHit hitInfo, 1000, 1 << LayerMask.NameToLayer("Enemy")|1 << LayerMask.NameToLayer("Builtings")))
+            PoolManager.Instance.GetObject("Prefabs/Bullet/Bullet", bullet =>
             {
-                GameObject hitEff = Instantiate(Resources.Load<GameObject>("Prefabs/Bullet/HitEff"), hitInfo.transform);
+                bullet.SetActive(false);
+                bullet.transform.position = firePos.position;
+                bullet.transform.rotation = firePos.rotation;
+                bullet.SetActive(true);
+            });
+            // 枪口火焰
+            PoolManager.Instance.GetObject("Prefabs/Bullet/Muzzle", muzzle =>
+            {
+                muzzle.transform.position = firePos.position;
+                muzzle.transform.rotation = firePos.rotation;
+            });
+        }
+        
+        // 开枪射线检测, 朝向准星方向
+        if (Physics.Raycast(fireRay, out RaycastHit hitInfo, 1000, 1 << LayerMask.NameToLayer("Enemy") | 1 << LayerMask.NameToLayer("Buildings")))
+        {
+            //创建打击特效
+            PoolManager.Instance.GetObject("Prefabs/Bullet/HitEff", hitEff =>
+            {
                 hitEff.transform.position = hitInfo.point;
                 hitEff.transform.rotation = Quaternion.LookRotation(hitInfo.normal);
-                Destroy(hitEff, 1f);
-                hitInfo.transform.gameObject.GetComponent<Zombie>()?.Wound(weapon.atk + baseAtk);
-            }
+            });
+            
+            // 受伤
+            hitInfo.transform.gameObject.GetComponent<Zombie>()?.Wound(weapon.atk + baseAtk);
         }
-
         // 减少子弹
         weapon.SubBullet();
         // 刷新开火图标
@@ -433,7 +458,8 @@ public class Player : MonoBehaviour
             hunGunAudioSource.volume = DataManager.Instance.musicData.soundVolume;
             hunGunAudioSource.mute = !DataManager.Instance.musicData.soundOpen;
             hunGunAudioSource.Play();
-        }else if (weapon.type == E_Weapon.MachineGun)
+        }
+        else if (weapon.type == E_Weapon.MachineGun)
         {
             machineGunAudioSource.volume = DataManager.Instance.musicData.soundVolume;
             machineGunAudioSource.mute = !DataManager.Instance.musicData.soundOpen;
@@ -442,7 +468,8 @@ public class Player : MonoBehaviour
             {
                 machineGunAudioSource.time = 0.15f;
                 machineGunAudioSource.Play();
-            }else if (!machineGunAudioSource.isPlaying)
+            }
+            else if (!machineGunAudioSource.isPlaying)
             {
                 machineGunAudioSource.Play();
             }
@@ -575,6 +602,7 @@ public class Player : MonoBehaviour
                 animator.runtimeAnimatorController = Instantiate(Resources.Load<RuntimeAnimatorController>("Animator/Role/Knife"));
                 break;
         }
+
         // 每次切换武器重置动画分层权重
         StopAllCoroutine();
         if (isCrouch)

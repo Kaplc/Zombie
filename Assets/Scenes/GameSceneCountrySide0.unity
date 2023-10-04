@@ -15895,7 +15895,7 @@ Transform:
   - {fileID: 731903249}
   - {fileID: 551300100}
   m_Father: {fileID: 1448931361}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &292325266 stripped
 Transform:
@@ -28420,7 +28420,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 1414497437}
   m_Father: {fileID: 291782734}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -49362,7 +49363,7 @@ Transform:
   - {fileID: 1307029800}
   - {fileID: 470342817}
   m_Father: {fileID: 1448931361}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &968422039
 PrefabInstance:
@@ -64814,36 +64815,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cb15747b025c1014e854213bc8cf5324, type: 3}
---- !u!1 &1335126707
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1335126708}
-  m_Layer: 0
-  m_Name: RoleBornPos
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1335126708
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1335126707}
-  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 55.85936, y: -0.06, z: 9.946777}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1414497437}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1001 &1335494749
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -68356,16 +68327,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d2df23845e0e504d88e9e9977bd64d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roleBornPos: {fileID: 1335126708}
   player: {fileID: 0}
   playerCpm: {fileID: 0}
-  core: {fileID: 1853044675}
+  core: {fileID: 1853044676}
   count: 0
   money: 0
   isGameOver: 0
   bgm: {fileID: 0}
   zombieBorn: {fileID: 1750874098}
   showMenu: 0
+  cameraFollow: {fileID: 0}
 --- !u!4 &1414497437
 Transform:
   m_ObjectHideFlags: 0
@@ -68376,9 +68347,8 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 189.48064, y: 29.226881, z: 213.54323}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 1335126708}
-  m_Father: {fileID: 1448931361}
+  m_Children: []
+  m_Father: {fileID: 566962075}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1414991692
@@ -70293,7 +70263,6 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 1414497437}
   - {fileID: 291782734}
   - {fileID: 2024696423}
   - {fileID: 968297844}
@@ -71309,6 +71278,7 @@ MonoBehaviour:
   lookAtY: 2
   lookAtPos: {x: 0, y: 0, z: 0}
   followSpeed: 10
+  worldPoint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1457945362
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -95975,7 +95945,7 @@ Transform:
   - {fileID: 279278639}
   - {fileID: 1442796200}
   m_Father: {fileID: 1448931361}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2026314558
 PrefabInstance:

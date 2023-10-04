@@ -26,6 +26,8 @@ public class GameManger: MonoBehaviour
     private AudioClip acZombieTide;
 
     public bool showMenu;
+
+    public CameraFollow cameraFollow;
     
     private void Awake()
     {
@@ -38,23 +40,26 @@ public class GameManger: MonoBehaviour
         bgm.loop = true;
         // 提前加载音乐文件
         acZombieTide = Resources.Load<AudioClip>("Music/尸潮来袭");
+        // 动态生成玩家出生点
+        roleBornPos = new GameObject("RoleBornPos").GetComponent<Transform>();
+        roleBornPos.transform.position = new Vector3(245f,29f,223f);
+        // 创建玩家
+        player = Instantiate(Resources.Load<GameObject>(DataManager.Instance.roleInfo.path)).GetComponent<Transform>();
+        playerCpm = player.GetComponent<Player>();
+        player.gameObject.transform.position = roleBornPos.position;
+        // 设置摄像机跟随
+        cameraFollow = Camera.main.GetComponent<CameraFollow>();
+        cameraFollow.playerTransform = player;
     }
 
     private void Start()
     {
-        // 创建玩家
-        player = Instantiate(Resources.Load<GameObject>(DataManager.Instance.roleInfo.path)).GetComponent<Transform>();
-        player.position = roleBornPos.position;
-        // 设置摄像机跟随
-        Camera.main.GetComponent<CameraFollow>().playerTransform = player;
         // 初始化游戏数据
         money = DataManager.Instance.mapInfos[DataManager.Instance.nowMapID].startMoney; // 初始金钱
         count = DataManager.Instance.mapInfos[DataManager.Instance.nowMapID].count; // 数量
         // 初始化面板数据
         UIManager.Instance.GetPanel<GamePanel>().UpdateCount(count);
         UIManager.Instance.GetPanel<GamePanel>().UpdateGameMoney(money);
-        // 
-        playerCpm = player.GetComponent<Player>();
     }
 
     private void Update()

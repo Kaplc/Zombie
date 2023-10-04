@@ -71,11 +71,12 @@ public class Tower : MonoBehaviour
         // 满足开火cd和角度才开火
         if (Time.time - lastFireTime > fireCd && angelSure)
         {
-            GameObject bullet = Instantiate(Resources.Load<GameObject>("Prefabs/Bullet/Bullet"));
-            bullet.transform.position = barrel.position;
-            bullet.transform.rotation = head.rotation;
+            PoolManager.Instance.GetObject("Prefabs/Bullet/Bullet", bullet =>
+            {
+                bullet.transform.position = barrel.position;
+                bullet.transform.rotation = head.rotation;
+            });
             
-             
             // 射线检测创建打击特效
             if (Physics.Raycast(head.position, head.forward, out hitInfo, 1000f, 1<< LayerMask.NameToLayer("Enemy")))
             {
