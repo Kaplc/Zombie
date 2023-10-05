@@ -7,9 +7,7 @@ public class Tower : MonoBehaviour
 {
     public Transform head;
     public Transform barrel; // 枪管
-    public Transform target;
-
-    public bool isFire;
+    private Transform target;
 
     private float lastFindTime;
     private float lastFireTime;
@@ -57,11 +55,18 @@ public class Tower : MonoBehaviour
 
     private void Fire()
     {
+        // 超出距离禁止开火
+        if (Vector3.Distance(target.position, transform.position)>10)
+        {
+            return;
+        }
+        
         // 开火转动炮管
         barrel.rotation *= Quaternion.AngleAxis(5f, Vector3.forward);
         // 头部锁定
         head.rotation = Quaternion.Lerp(head.rotation,
             Quaternion.LookRotation(new Vector3(target.position.x, head.position.y + 1.5f, target.position.z) - head.position), Time.deltaTime * 5);
+        
         // 进行角度确认
         if (!angelSure && CalAngleLessThen(target.position - transform.position, head.forward, 8f))
         {
@@ -131,12 +136,6 @@ public class Tower : MonoBehaviour
             
             lastFireTime = Time.time;
             target.GetComponent<Zombie>().Wound(1f);
-            
-            // 死亡就停止攻击
-            if (target.GetComponent<Zombie>().isDead)
-            {
-                target = null;
-            }
         }
     }
     /// <summary>

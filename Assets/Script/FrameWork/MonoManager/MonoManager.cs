@@ -15,12 +15,12 @@ public class MonoManager : BaseMonoAutoSingleton<MonoManager>
     }
     
     // 添加事件
-    public void AddEvent(UnityAction newEvent)
+    public void AddUpdateEvent(UnityAction newEvent)
     {
         action += newEvent;
     }
     // 移除事件
-    public void RemoveEvent(UnityAction oldEvent)
+    public void RemoveUpdateEvent(UnityAction oldEvent)
     {
         action -= oldEvent;
     }
