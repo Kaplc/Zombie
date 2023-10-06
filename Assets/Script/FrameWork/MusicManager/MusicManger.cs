@@ -18,14 +18,10 @@ namespace Script.FrameWork.MusicManager
         // 音乐
         private GameObject musicObject; // 音乐依附的对象
         private AudioSource musicAudioSource;
-        private float musicVolume;
-        private bool musicMute;
 
         // 音效
         private GameObject soundObject; // 音效依附的对象
         private List<AudioSource> soundAudioSources;
-        private float soundVolume;
-        private bool soundMute;
 
         public MusicManger()
         {
@@ -35,6 +31,12 @@ namespace Script.FrameWork.MusicManager
 
         private void UpdateSound()
         {
+            if (!soundObject)
+            {
+                soundObject = null;
+                soundAudioSources.Clear();
+            }
+            
             for (int i = 0; i < soundAudioSources.Count; i++)
             {
                 // 音效播放完毕就自动移除
@@ -60,20 +62,15 @@ namespace Script.FrameWork.MusicManager
             {
                 musicObject = new GameObject("Music");
                 musicAudioSource = musicObject.AddComponent<AudioSource>();
-                // 异步加载音乐文件并播放
-                ResourcesFrameWork.Instance.LoadAsync<AudioClip>(path, ac =>
-                {
-                    musicAudioSource.clip = ac;
-                    musicAudioSource.volume = volume;
-                    musicAudioSource.loop = isLoop;
-                    musicAudioSource.Play();
-                });
-                return;
             }
-
-            musicVolume = volume;
-            musicAudioSource.volume = volume;
-            musicAudioSource.Play();
+            // 异步加载音乐文件并播放
+            ResourcesFrameWork.Instance.LoadAsync<AudioClip>(path, ac =>
+            {
+                musicAudioSource.clip = ac;
+                musicAudioSource.volume = volume;
+                musicAudioSource.loop = isLoop;
+                musicAudioSource.Play();
+            });
         }
 
         // 修改音量
@@ -81,8 +78,7 @@ namespace Script.FrameWork.MusicManager
         {
             if (musicAudioSource)
             {
-                musicVolume = volume;
-                musicAudioSource.volume = musicVolume;
+                musicAudioSource.volume = volume;
                 return;
             }
             Debug.Log("无音乐对象");
@@ -148,10 +144,9 @@ namespace Script.FrameWork.MusicManager
         // 修改音效
         public void ChangeSoundVolume(float volume)
         {
-            soundVolume = volume;
             for (int i = 0; i < soundAudioSources.Count; i++)
             {
-                soundAudioSources[i].volume = soundVolume;
+                soundAudioSources[i].volume = volume;
             }
         }
         // 静音

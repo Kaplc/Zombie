@@ -6,18 +6,19 @@ using UnityEngine.Events;
 public class InputManger : BaseSingleton<InputManger>
 {
     private bool isStart;
+    private UnityAction keyCodeAction;
     
     public InputManger()
     {
         // 每帧执行检测
-        MonoManager.Instance.AddUpdateEvent(AddKeyCode);
+        MonoManager.Instance.AddUpdateEvent(CheckKeyCode);
     }
     
     /// <summary>
     /// 执行触发
     /// </summary>
     /// <param name="keyCode">要检测的按键</param>
-    public void TriggerKeyCode(KeyCode keyCode)
+    private void TriggerKeyCode(KeyCode keyCode)
     {
         // 长按
         if (Input.GetKey(keyCode))
@@ -37,16 +38,21 @@ public class InputManger : BaseSingleton<InputManger>
     }
     
     /// <summary>
-    /// 添加的检测按键
+    /// 检测按键
     /// </summary>
     /// <param name="checkKeyCodeFunc"></param>
-    public void AddKeyCode()
+    private void CheckKeyCode()
     {
         if (!isStart)return;
-
-        TriggerKeyCode(KeyCode.A);
+        
+        keyCodeAction?.Invoke();
     }
 
+    public void AddCheckKeyCode(KeyCode keyCode)
+    {
+        keyCodeAction += () => { TriggerKeyCode(keyCode); };
+    }
+    
     public void Start()
     {
         isStart = true;
@@ -56,5 +62,9 @@ public class InputManger : BaseSingleton<InputManger>
     {
         isStart = false;
     }
-    
+
+    public void Clear()
+    {
+        keyCodeAction = null;
+    }
 }

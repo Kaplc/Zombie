@@ -43,6 +43,19 @@ public class GameManger: MonoBehaviour
         // 设置摄像机跟随
         cameraFollow = Camera.main.GetComponent<CameraFollow>();
         cameraFollow.playerTransform = player.transform;
+        
+        // 启动按键检测
+        InputManger.Instance.Start();
+        // T建塔
+        InputManger.Instance.AddCheckKeyCode(KeyCode.T);
+        // ESC打开菜单面板
+        InputManger.Instance.AddCheckKeyCode(KeyCode.Escape);
+        // 补给相关
+        InputManger.Instance.AddCheckKeyCode(KeyCode.E); // E键打开补给面板
+        InputManger.Instance.AddCheckKeyCode(KeyCode.F1); // F1加子弹
+        InputManger.Instance.AddCheckKeyCode(KeyCode.F2); // F2加血
+        InputManger.Instance.AddCheckKeyCode(KeyCode.F3); // F3加攻击力
+        
     }
 
     private void Start()
@@ -54,40 +67,47 @@ public class GameManger: MonoBehaviour
         UIManager.Instance.GetPanel<GamePanel>().UpdateCount(count);
         UIManager.Instance.GetPanel<GamePanel>().UpdateGameMoney(money);
         
-        Invoke("SetPlayerPos", 1f);
+        Invoke("SetPlayerPos", 0.5f);
+        
+        
+        EventCenter.Instance.AddEventListener(KeyCode.Escape+"按下", () =>
+        {
+            if (!isGameOver)
+            {
+                showMenu = !showMenu;
+            
+                // 按一下打开
+                if (showMenu)
+                {
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
+                    UIManager.Instance.Show<MenuPanel>();
+                }
+                else // 第二下关闭
+                {
+                    Cursor.lockState = CursorLockMode.Locked;
+                    Cursor.visible = false;
+                    UIManager.Instance.Hide<MenuPanel>();
+                    UIManager.Instance.Hide<ExitPanel>();
+                    UIManager.Instance.Hide<SettingPanel>();
+                }
+            }
+        });
+    }
+     
+    private void OnDestroy()
+    {
+        // 清空按键检测事件
+        InputManger.Instance.Clear();
+        EventCenter.Instance.ClearAllEvent();
+        PoolManager.Instance.Clear();
     }
 
     private void SetPlayerPos()
     {
         player.transform.localPosition = Vector3.zero;
     }
-    private void Update()
-    {
-        
-        // esc打开菜单
-        if (Input.GetKeyDown(KeyCode.Escape) && !isGameOver)
-        {
-            showMenu = !showMenu;
-            
-            // 按一下打开
-            if (showMenu)
-            {
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
-                UIManager.Instance.Show<MenuPanel>();
-            }
-            else // 第二下关闭
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-                UIManager.Instance.Hide<MenuPanel>();
-                UIManager.Instance.Hide<ExitPanel>();
-                UIManager.Instance.Hide<SettingPanel>();
-            }
-            
-        }
-    }
-    
+
     public void AddOrSubMoney(int num)
     {
         money += num;
@@ -145,7 +165,7 @@ public class GameManger: MonoBehaviour
     {
         UIManager.Instance.GetPanel<GamePanel>().ShowTileTips();
         
-        MusicManger.Instance.PlayMusic("Music/尸潮来袭", DataManager.Instance.musicData.musicVolume, false);
+        MusicManger.Instance.PlayMusic("Music/尸潮来袭", DataManager.Instance.musicData.musicVolume, true);
         zombieBorn.CreateZombieTide();
     }
 }

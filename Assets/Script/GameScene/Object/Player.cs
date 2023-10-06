@@ -92,6 +92,11 @@ public class Player : MonoBehaviour
         switch (weapon.type)
         {
             case E_Weapon.Knife:
+                if (Input.GetMouseButton(0))
+                {
+                    Attack();
+                }
+                break;
             case E_Weapon.HandGun:
                 // 点射
                 if (Input.GetMouseButtonDown(0))

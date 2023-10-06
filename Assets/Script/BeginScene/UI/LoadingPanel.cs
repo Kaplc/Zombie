@@ -10,13 +10,13 @@ public class LoadingPanel : BasePanel
     public RectTransform imgLoading;
     public Text txProcess;
     public float time;
-
-    private Coroutine loading;
+    
     private AsyncOperation ao;
+    private float process;
 
-    public void UpdateLoadingImg(float process)
+    public void UpdateLoadingImg(float value)
     {
-        process = Mathf.Clamp(process, 0, 1f);
+        process = Mathf.Clamp(value, 0, 1f);
         imgLoading.sizeDelta = new Vector2(process * 1000, 50);
         txProcess.text = $"Loading...{(int)(process * 100)}%";
 
@@ -29,14 +29,17 @@ public class LoadingPanel : BasePanel
     protected override void Update()
     {
         base.Update();
-        
-        time += Time.deltaTime * 0.3f;
-        UpdateLoadingImg(time);
+
+        if (process<1)
+        {
+            time += Time.deltaTime * 0.3f;
+            UpdateLoadingImg(time);
+        }
     }
 
     protected override void Init()
     {
-        loading = StartCoroutine(Loading());
+       StartCoroutine(Loading());
     }
 
     private IEnumerator Loading()
@@ -51,15 +54,12 @@ public class LoadingPanel : BasePanel
             UIManager.Instance.Show<GamePanel>();
         };
 
-        while (true)
+        while (!ao.isDone)
         {
-            if (ao.isDone)
-            {
-                ao.allowSceneActivation = true;
-                UpdateLoadingImg(1);
-            }
-
-            yield return null;
+            yield return ao;
         }
+        UpdateLoadingImg(1);
+        ao.allowSceneActivation = true;
+        
     }
 }

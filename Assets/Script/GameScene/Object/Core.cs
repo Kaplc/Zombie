@@ -15,34 +15,55 @@ public class Core : MonoBehaviour
    {
       maxHp = hp = DataManager.Instance.mapInfos[DataManager.Instance.nowMapID].coreHp;
       UpdateHpForPanel();
-   }
 
-   private void Update()
-   {
-      if (within)
+      #region 按键检测相关
+
+      EventCenter.Instance.AddEventListener(KeyCode.E + "按下", () =>
       {
-         if (Input.GetKeyDown(KeyCode.E))
+         // 在范围内才能打开
+         if (within)
          {
-            UIManager.Instance.GetPanel<GamePanel>().ShowShopPanel();
-            isShow = true;
-         }
-
-         if (isShow)
-         {
-            if (Input.GetKeyDown(KeyCode.F1))
+            if (isShow)
             {
-               UIManager.Instance.GetPanel<GamePanel>().itemBtns[0].Trigger();
+               UIManager.Instance.GetPanel<GamePanel>().HideShopPanel();
+               isShow = false;
             }
-            if (Input.GetKeyDown(KeyCode.F2))
+            else
             {
-               UIManager.Instance.GetPanel<GamePanel>().itemBtns[1].Trigger();
-            }
-            if (Input.GetKeyDown(KeyCode.F3))
-            {
-               UIManager.Instance.GetPanel<GamePanel>().itemBtns[2].Trigger();
+               UIManager.Instance.GetPanel<GamePanel>().ShowShopPanel();
+               isShow = true;
             }
          }
-      }
+      });
+      
+      EventCenter.Instance.AddEventListener(KeyCode.F1+"按下", () =>
+      {
+         // 在范围内且已经打开面板才能触发
+         if (within && isShow)
+         {
+            UIManager.Instance.GetPanel<GamePanel>().itemBtns[0].Trigger();
+         }
+      });
+      
+      EventCenter.Instance.AddEventListener(KeyCode.F2+"按下", () =>
+      {
+         // 在范围内且已经打开面板才能触发
+         if (within && isShow)
+         {
+            UIManager.Instance.GetPanel<GamePanel>().itemBtns[1].Trigger();
+         }
+      });
+      
+      EventCenter.Instance.AddEventListener(KeyCode.F3+"按下", () =>
+      {
+         // 在范围内且已经打开面板才能触发
+         if (within && isShow)
+         {
+            UIManager.Instance.GetPanel<GamePanel>().itemBtns[2].Trigger();
+         }
+      });
+      
+      #endregion
    }
 
    public void UpdateHpForPanel()

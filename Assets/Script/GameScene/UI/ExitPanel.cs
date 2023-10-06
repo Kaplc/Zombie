@@ -13,10 +13,10 @@ public class ExitPanel : BasePanel
     {
         btnSure.onClick.AddListener(() =>
         {
-            SceneManager.LoadScene("BeginScene");
             UIManager.Instance.Hide<GamePanel>();
             UIManager.Instance.Hide<MenuPanel>();
             UIManager.Instance.Hide<ExitPanel>();
+            SceneManager.LoadScene("BeginScene");
         });
         btnCancel.onClick.AddListener(() =>
         {
