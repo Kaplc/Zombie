@@ -33,7 +33,7 @@ public class CameraFollow : MonoBehaviour
         // 镜头随鼠标上下移动
         lookAtY += Input.GetAxis("Mouse Y") * Time.deltaTime;
         worldPoint.x = Input.mousePosition.x;
-        worldPoint.y = Input.mousePosition.y;
+        worldPoint.y = Input.mousePosition.y + 15;
         GameManger.Instance.player.GetComponent<Player>().firePos.LookAt(mainCamera.ScreenToWorldPoint(worldPoint));
         GameManger.Instance.player.GetComponent<Player>().crouchFirePos.LookAt(mainCamera.ScreenToWorldPoint(worldPoint));
         // 限制上下移动的范围

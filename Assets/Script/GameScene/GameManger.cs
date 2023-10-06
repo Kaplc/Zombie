@@ -37,7 +37,7 @@ public class GameManger: MonoBehaviour
         acZombieTide = Resources.Load<AudioClip>("Music/尸潮来袭");
         // 动态生成玩家出生点
         roleBornPos = new GameObject("RoleBornPos").GetComponent<Transform>();
-        roleBornPos.transform.position = new Vector3(245f,30f,223f);
+        roleBornPos.transform.position = new Vector3(245f,29f,223f);
         // 创建玩家
         player = Instantiate(Resources.Load<GameObject>(DataManager.Instance.roleInfo.path), roleBornPos);
         // 设置摄像机跟随
