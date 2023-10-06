@@ -29,7 +29,7 @@ public class CameraFollow : MonoBehaviour
         {
             return;
         }
-        
+
         // 镜头随鼠标上下移动
         lookAtY += Input.GetAxis("Mouse Y") * Time.deltaTime;
         worldPoint.x = Input.mousePosition.x;
@@ -51,6 +51,6 @@ public class CameraFollow : MonoBehaviour
         transform.position = Vector3.Lerp(transform.position, cameraPos, Time.deltaTime * followSpeed);
         // 看向
         lookAtPos = playerTransform.position + Vector3.up * lookAtY;
-        transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.LookRotation(lookAtPos - transform.position), Time.deltaTime * 50); 
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(lookAtPos - transform.position), Time.deltaTime * 50);
     }
 }

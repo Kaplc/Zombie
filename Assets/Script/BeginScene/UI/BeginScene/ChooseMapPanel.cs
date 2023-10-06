@@ -20,7 +20,7 @@ public class ChooseMapPanel : BasePanel
         {
             UIManager.Instance.Hide<ChooseMapPanel>(true, () =>
             {
-                UIManager.Instance.Show<LoadingPanel>(false);
+                UIManager.Instance.Show<LoadingPanel>(EUILayerType.Bottom, false);
             });
         });
         btnBack.onClick.AddListener(() =>

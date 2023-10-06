@@ -11,7 +11,8 @@ public abstract class BasePanel : MonoBehaviour
     private bool hideFade;
     private CanvasGroup canvasGroup;
     public float fadeSpeed = 3f;
-    public UnityAction hideCallBack;
+    private UnityAction hideCallBack;
+    private UnityAction showCallBack;
 
 
     protected virtual void Awake()
@@ -35,19 +36,20 @@ public abstract class BasePanel : MonoBehaviour
         Fade();
     }
 
-    public virtual void Show(bool isFade)
+    public virtual void Show(bool isFade, UnityAction callBack)
     {
         if (isFade)
         {
             showFade = true;
             canvasGroup.alpha = 0;
+            showCallBack += callBack;
         }
         else
         {
             showFade = false;
-            canvasGroup.alpha = 1;
+            canvasGroup.alpha = 1; // 直接显示
+            callBack?.Invoke(); // 不用淡入直接执行回调
         }
-        
     }
 
     public virtual void Hide(UnityAction callBack)
@@ -65,6 +67,7 @@ public abstract class BasePanel : MonoBehaviour
             {
                 canvasGroup.alpha = 1;
                 showFade = false;
+                showCallBack?.Invoke();
                 return;
             }
 
