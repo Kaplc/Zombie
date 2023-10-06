@@ -110,7 +110,6 @@ public class Tower : MonoBehaviour
                     muzzle.transform.position = barrel.position;
                     muzzle.transform.rotation = head.rotation;
                 });
-                
             }
             // 射线检测创建打击特效
             if (Physics.Raycast(head.position, head.forward, out hitInfo, 1000f, 1<< LayerMask.NameToLayer("Enemy")))
@@ -157,7 +156,7 @@ public class Tower : MonoBehaviour
         {
             return true;
         }
-
+        
         return false;
     }
 }

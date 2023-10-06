@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Script.FrameWork.MusicManager;
 using UnityEngine;
 
 public class Main : MonoBehaviour
@@ -19,5 +20,7 @@ public class Main : MonoBehaviour
     void Start()
     {
         UIManager.Instance.Show<BeginPanel>();
+        
+        MusicManger.Instance.PlayMusic("Music/开始界面", DataManager.Instance.musicData.musicVolume, true);
     }
 }

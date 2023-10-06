@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Script.FrameWork.MusicManager;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
@@ -70,9 +71,6 @@ public class Player : MonoBehaviour
         // 初始化面板血量
         UIManager.Instance.GetPanel<GamePanel>().UpdatePlayerHp(hp, maxHp);
         // 初始化音乐
-        hunGunAudioSource = gameObject.AddComponent<AudioSource>();
-        hunGunAudioSource.clip = Resources.Load<AudioClip>("Music/Gun");
-
         machineGunAudioSource = gameObject.AddComponent<AudioSource>();
         machineGunAudioSource.clip = Resources.Load<AudioClip>("Music/Tower");
     }
@@ -511,17 +509,16 @@ public class Player : MonoBehaviour
         UIManager.Instance.GetPanel<GamePanel>().RefreshBulletImg();
         // 更新面板子弹数
         UpdateInfoToPanel();
-
+        
+        // 播放开枪音效
         if (weapon.type == E_Weapon.HandGun)
         {
-            hunGunAudioSource.volume = DataManager.Instance.musicData.soundVolume;
-            hunGunAudioSource.mute = !DataManager.Instance.musicData.soundOpen;
-            hunGunAudioSource.Play();
+            MusicManger.Instance.PlaySound("Music/Gun", DataManager.Instance.musicData.soundVolume, false);
         }
         else if (weapon.type == E_Weapon.MachineGun)
         {
             machineGunAudioSource.volume = DataManager.Instance.musicData.soundVolume;
-            machineGunAudioSource.mute = !DataManager.Instance.musicData.soundOpen;
+            machineGunAudioSource.mute = DataManager.Instance.musicData.soundMute;
             // 音效裁剪
             if (machineGunAudioSource.time >= 0.4f)
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Script.FrameWork.MusicManager;
 using UnityEngine;
 
 public class GameManger: MonoBehaviour
@@ -16,9 +17,7 @@ public class GameManger: MonoBehaviour
     public int money;
 
     public bool isGameOver;
-
-    public AudioSource bgm;
-
+    
     public ZombieBorn zombieBorn;
     private bool zombieTide;
 
@@ -32,11 +31,8 @@ public class GameManger: MonoBehaviour
     {
         instance = this;
         // 创建BGM
-        bgm = new GameObject("BGM").AddComponent<AudioSource>();
-        bgm.gameObject.AddComponent<BGMControl>();
-        bgm.clip = Resources.Load<AudioClip>("Music/BGM");
-        bgm.Play();
-        bgm.loop = true;
+        MusicManger.Instance.PlayMusic("Music/BGM", DataManager.Instance.musicData.musicVolume, true);
+
         // 提前加载音乐文件
         acZombieTide = Resources.Load<AudioClip>("Music/尸潮来袭");
         // 动态生成玩家出生点
@@ -123,11 +119,13 @@ public class GameManger: MonoBehaviour
         isGameOver = true;
         // 胜利或失败BGM
         if (isWin)
-            bgm.clip = Resources.Load<AudioClip>("Music/胜利");
+            MusicManger.Instance.PlayMusic("Music/胜利", DataManager.Instance.musicData.musicVolume, false);
+            // bgm.clip = Resources.Load<AudioClip>("Music/胜利");
         else 
-            bgm.clip = Resources.Load<AudioClip>("Music/结束");
-        bgm.Play();
-        bgm.loop = false;
+            MusicManger.Instance.PlayMusic("Music/结束", DataManager.Instance.musicData.musicVolume, false);
+            // bgm.clip = Resources.Load<AudioClip>("Music/结束");
+        // bgm.Play();
+        // bgm.loop = false;
         // 准星隐藏
         UIManager.Instance.GetPanel<GamePanel>().imgStar.gameObject.SetActive(false);
         // 摄像机脚本跟随失活
@@ -147,9 +145,7 @@ public class GameManger: MonoBehaviour
     {
         UIManager.Instance.GetPanel<GamePanel>().ShowTileTips();
         
-        bgm.clip = acZombieTide;
-        bgm.Play();
-        bgm.loop = true;
+        MusicManger.Instance.PlayMusic("Music/尸潮来袭", DataManager.Instance.musicData.musicVolume, false);
         zombieBorn.CreateZombieTide();
     }
 }
