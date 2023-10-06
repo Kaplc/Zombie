@@ -29,15 +29,15 @@ public class Core : MonoBehaviour
 
          if (isShow)
          {
-            if (Input.GetKeyDown(KeyCode.Alpha8))
+            if (Input.GetKeyDown(KeyCode.F1))
             {
                UIManager.Instance.GetPanel<GamePanel>().itemBtns[0].Trigger();
             }
-            if (Input.GetKeyDown(KeyCode.Alpha9))
+            if (Input.GetKeyDown(KeyCode.F2))
             {
                UIManager.Instance.GetPanel<GamePanel>().itemBtns[1].Trigger();
             }
-            if (Input.GetKeyDown(KeyCode.Alpha0))
+            if (Input.GetKeyDown(KeyCode.F3))
             {
                UIManager.Instance.GetPanel<GamePanel>().itemBtns[2].Trigger();
             }
