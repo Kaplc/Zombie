@@ -669,7 +669,16 @@ public class Player : MonoBehaviour
         {
             animator.SetBool("Crouch", true);
         }
+        // 立刻恢复当前人物移动
+        animator.SetFloat("XSpeed", Mathf.Lerp(animator.GetFloat("XSpeed"), xDir, Time.deltaTime * moveSpeed));
+        animator.SetFloat("YSpeed", Mathf.Lerp(animator.GetFloat("YSpeed"), yDir, Time.deltaTime * moveSpeed));
 
+        if (yDir != 0 || xDir != 0)
+        {
+            animator.SetLayerWeight(animator.GetLayerIndex("MoveShoot"), 1);
+        }
+        
+        
         // 其他武器现实子弹数
         UIManager.Instance.GetPanel<GamePanel>().ShowBulletInfo();
         UIManager.Instance.GetPanel<GamePanel>().RefreshBulletImg();
