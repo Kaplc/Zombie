@@ -5,36 +5,31 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public ParticleSystem ps;
-    public ParticleSystem beamPs;
+    public float speed;
+    public List<ParticleSystem> particleSystems;
     public TrailRenderer tr;
-    public string time;
 
     private Coroutine coroutine;
-    
+
     private void OnEnable()
     {
-        if (ps)
+        if (particleSystems.Count > 0)
         {
-            ps.Play();
-            beamPs.Play();
+            for (int i = 0; i < particleSystems.Count; i++)
+            {
+                particleSystems[i].Play();
+            }
             tr.Clear();
         }
         
         // 缓存池保存
-        // Invoke("PushBullet", 3f);
         coroutine = StartCoroutine(PushCoroutine());
-    }
-
-    private void Start()
-    {
-        time = Time.time.ToString();
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        transform.Translate(transform.forward * (Time.deltaTime * 50), Space.World);
+        transform.Translate(transform.forward * (Time.deltaTime * speed), Space.World);
     }
 
     private void OnTriggerEnter(Collider other)

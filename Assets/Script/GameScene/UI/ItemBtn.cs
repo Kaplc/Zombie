@@ -38,7 +38,11 @@ public class ItemBtn : MonoBehaviour
                     if (GameManger.Instance.player.GetComponent<Player>().RestoreBullet())
                     {
                         GameManger.Instance.AddOrSubMoney(-money);
-                    } 
+                    }
+                    else
+                    {
+                        UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("后备弹药已满");
+                    }
                 }
                 else
                     UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("金钱<color=red>不足</color>");

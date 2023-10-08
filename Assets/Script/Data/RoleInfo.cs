@@ -11,4 +11,5 @@ public class RoleInfo
     public int hp;
     public int mainBullets;
     public int hanGunBullets;
+    public int rocketLaunchBullets;
 }

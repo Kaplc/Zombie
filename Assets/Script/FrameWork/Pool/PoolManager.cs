@@ -28,7 +28,7 @@ public class PoolData
         targetObject.transform.parent = null;
         // 从list移除
         objectList.RemoveAt(0);
-        
+
         targetObject.SetActive(true);
         return targetObject;
     }
@@ -77,7 +77,7 @@ public class PoolManager : BaseSingleton<PoolManager>
         {
             return poolDic[fullName].Get();
         }
-        
+
         return null;
     }
 
@@ -103,7 +103,10 @@ public class PoolManager : BaseSingleton<PoolManager>
     // 清空缓存池
     public void Clear()
     {
-        poolDic.Clear();
-        poolObject = null;
+        if (poolDic != null)
+        {
+            poolDic.Clear();
+            poolObject = null;
+        }
     }
 }

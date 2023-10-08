@@ -2792,6 +2792,8 @@ Transform:
   - {fileID: 2112119741717193178}
   - {fileID: 127306502}
   - {fileID: 1467437494}
+  - {fileID: 6378791414360986100}
+  - {fileID: 6763734122174772588}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2849,6 +2851,8 @@ MonoBehaviour:
   handPos: {fileID: 2112119741717153336}
   firePos: {fileID: 127306502}
   crouchFirePos: {fileID: 1467437494}
+  rocketFirePos: {fileID: 6378791414360986100}
+  rocketCrouchFirePos: {fileID: 6763734122174772588}
   transitionSpeed: 3.75
 --- !u!1 &2112119741717108198
 GameObject:
@@ -3230,3 +3234,63 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.92072225, y: 0.09977388, z: -0.000000029802322}
     m_Extent: {x: 0.29843286, y: 0.2958452, z: 0.22833842}
   m_DirtyAABB: 0
+--- !u!1 &2349881617692857956
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6763734122174772588}
+  m_Layer: 10
+  m_Name: RocketCrouchFirePos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6763734122174772588
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2349881617692857956}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.028, y: 2, z: 0.65}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2112119741717235696}
+  m_RootOrder: 28
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8087012436497282844
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6378791414360986100}
+  m_Layer: 10
+  m_Name: RocketFirePos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6378791414360986100
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8087012436497282844}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.027, y: 2.3, z: 0.65}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2112119741717235696}
+  m_RootOrder: 27
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -11,6 +11,18 @@ public enum E_Weapon
     RocketLauncher
 }
 
+public class WeaponBag
+{
+    public int resSpareBullets;
+    public int spareBullets;
+    public Weapon weapon;
+
+    public WeaponBag(int bulletCount, Weapon weapon)
+    {
+        spareBullets = resSpareBullets = bulletCount;
+        this.weapon = weapon;
+    }
+}
 
 public class Weapon : MonoBehaviour
 {

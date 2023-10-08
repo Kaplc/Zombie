@@ -1,5 +1,5 @@
 [
-  {"id":0,"path":"Prefabs/Role/0","unlockMoney":0,"baseAtk": 0, "hp": 100,"mainBullets": 140, "hanGunBullets": 35},
-  {"id":1,"path":"Prefabs/Role/1","unlockMoney":100, "baseAtk": 3, "hp": 150,"mainBullets": 175, "hanGunBullets": 42},
-  {"id":2,"path":"Prefabs/Role/2","unlockMoney":200, "baseAtk": 6, "hp": 200,"mainBullets": 210, "hanGunBullets": 49}
+  {"id":0,"path":"Prefabs/Role/0","unlockMoney":0,"baseAtk": 0, "hp": 100,"mainBullets": 140, "hanGunBullets": 35, "rocketLaunchBullets": 1},
+  {"id":1,"path":"Prefabs/Role/1","unlockMoney":100, "baseAtk": 3, "hp": 150,"mainBullets": 175, "hanGunBullets": 42, "rocketLaunchBullets": 2},
+  {"id":2,"path":"Prefabs/Role/2","unlockMoney":200, "baseAtk": 6, "hp": 200,"mainBullets": 210, "hanGunBullets": 49, "rocketLaunchBullets": 3}
 ]

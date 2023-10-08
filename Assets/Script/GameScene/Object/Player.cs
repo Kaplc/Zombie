@@ -20,20 +20,22 @@ public class Player : MonoBehaviour
 
     // 武器相关
     private int weaponIndex;
-    private Weapon weapon;
+
+    // private Weapon weapon;
+    public WeaponBag weaponBag;
     public Transform handPos;
-    private int hanGunBullets; // 手枪剩余子弹
-    private int mainBullets; // 主武器剩余子弹
-    private Dictionary<int, GameObject> weaponBag;
+    private Dictionary<int, WeaponBag> weaponBagDic;
 
     // 开火点
     public Transform firePos;
     public Transform crouchFirePos;
+    public Transform rocketFirePos;
+    public Transform rocketCrouchFirePos;
     private Vector3 fireRayOrigin;
     private Ray fireRay;
 
     // 属性
-    private float baseAtk;
+    public float baseAtk;
     private float maxHp;
     private float hp;
 
@@ -61,7 +63,7 @@ public class Player : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         // 初始化武器背包
-        weaponBag = new Dictionary<int, GameObject>();
+        weaponBagDic = new Dictionary<int, WeaponBag>();
         weaponIndex = 3;
         ChangeWeapon();
         // 属性
@@ -89,27 +91,30 @@ public class Player : MonoBehaviour
         GetKeyNumToChangeWeapon();
 
         // 攻击
-        switch (weapon.type)
+        switch (weaponBag.weapon.type)
         {
             case E_Weapon.Knife:
-                if (Input.GetMouseButton(0))
+                if (Input.GetMouseButton(0) && !animator.GetBool("Roll"))
                 {
                     Attack();
                 }
+
                 break;
+            case E_Weapon.RocketLauncher:
             case E_Weapon.HandGun:
                 // 点射
-                if (Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButtonDown(0) && !animator.GetBool("Roll"))
                 {
                     // 有后备子弹重新装填
-                    if (hanGunBullets > 0 && weapon.nowBulletCount == 0)
+                    if (weaponBag.spareBullets > 0 && weaponBag.weapon.nowBulletCount == 0)
                     {
                         animator.SetBool("Reloading", true);
                         return;
                     }
 
                     // 枪里有子弹才攻击
-                    if (weapon.nowBulletCount > 0 && hanGunBullets > 0 || weapon.nowBulletCount > 0 && hanGunBullets == 0)
+                    if (weaponBag.weapon.nowBulletCount > 0 && weaponBag.spareBullets > 0 ||
+                        weaponBag.weapon.nowBulletCount > 0 && weaponBag.spareBullets == 0)
                     {
                         Attack();
                     }
@@ -122,10 +127,10 @@ public class Player : MonoBehaviour
                 break;
             case E_Weapon.MachineGun:
                 // 连射
-                if (Input.GetMouseButton(0))
+                if (Input.GetMouseButton(0) && !animator.GetBool("Roll"))
                 {
                     // 有后备子弹重新装填
-                    if (mainBullets > 0 && weapon.nowBulletCount == 0)
+                    if (weaponBag.spareBullets > 0 && weaponBag.weapon.nowBulletCount == 0)
                     {
                         animator.SetBool("Attack", false);
                         animator.SetBool("Reloading", true);
@@ -133,12 +138,13 @@ public class Player : MonoBehaviour
                     }
 
                     // 枪里有子弹才攻击
-                    if (weapon.nowBulletCount > 0 && mainBullets > 0 || weapon.nowBulletCount > 0 && mainBullets == 0)
+                    if (weaponBag.weapon.nowBulletCount > 0 && weaponBag.spareBullets > 0 ||
+                        weaponBag.weapon.nowBulletCount > 0 && weaponBag.spareBullets == 0)
                     {
                         Attack();
                     }
                     // 无子弹提示
-                    else if (weapon.nowBulletCount == 0 && mainBullets == 0)
+                    else if (weaponBag.weapon.nowBulletCount == 0 && weaponBag.spareBullets == 0)
                     {
                         animator.SetBool("Attack", false);
                         UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("弹药不足");
@@ -151,15 +157,13 @@ public class Player : MonoBehaviour
                 }
 
                 break;
-            case E_Weapon.RocketLauncher:
-                break;
         }
 
         // 手动装弹
-        if (Input.GetKeyDown(KeyCode.R) && weapon.nowBulletCount != weapon.bulletCount)
+        if (Input.GetKeyDown(KeyCode.R) && weaponBag.weapon.nowBulletCount != weaponBag.weapon.bulletCount)
         {
             // 当前武器有后备子弹才能重新装填
-            if (hanGunBullets > 0 && weapon.type == E_Weapon.HandGun || mainBullets > 0 && weapon.type == E_Weapon.MachineGun)
+            if (weaponBag.spareBullets > 0)
             {
                 animator.SetBool("Reloading", true);
             }
@@ -169,17 +173,15 @@ public class Player : MonoBehaviour
     private void Attack()
     {
         // 手枪和机枪有不同的动画状态机
-        switch (weapon.type)
+        switch (weaponBag.weapon.type)
         {
             case E_Weapon.Knife:
+            case E_Weapon.RocketLauncher:
             case E_Weapon.HandGun:
-                animator.SetBool("Attacking", true);
                 animator.SetTrigger("Attack");
                 break;
             case E_Weapon.MachineGun:
                 animator.SetBool("Attack", true);
-                break;
-            case E_Weapon.RocketLauncher:
                 break;
         }
     }
@@ -232,7 +234,7 @@ public class Player : MonoBehaviour
         }
 
         // 按x翻滚: 在装弹和攻击时无效
-        if (Input.GetKeyDown(KeyCode.X) && !animator.GetBool("Reloading") && !animator.GetBool("Attacking"))
+        if (Input.GetKeyDown(KeyCode.X) && !animator.GetBool("Reloading"))
         {
             Roll();
         }
@@ -253,7 +255,7 @@ public class Player : MonoBehaviour
         if ((xDir != 0 || yDir != 0) && !animator.GetBool("Reloading") && !animator.GetBool("Roll"))
         {
             StopAllCoroutine();
-            if (weapon.type != E_Weapon.Knife)
+            if (weaponBag.weapon.type != E_Weapon.Knife)
             {
                 subReloadShootWeightCoroutine = StartCoroutine(SubWeight("MoveReload"));
             }
@@ -265,7 +267,7 @@ public class Player : MonoBehaviour
         {
             StopAllCoroutine();
             subMoveShootWeightCoroutine = StartCoroutine(SubWeight("MoveShoot"));
-            if (weapon.type != E_Weapon.Knife)
+            if (weaponBag.weapon.type != E_Weapon.Knife)
             {
                 addReloadShootWeightCoroutine = StartCoroutine(AddWeight("MoveReload"));
             }
@@ -277,7 +279,7 @@ public class Player : MonoBehaviour
             if (!animator.GetBool("Reloading"))
             {
                 StopAllCoroutine();
-                if (weapon.type == E_Weapon.Knife)
+                if (weaponBag.weapon.type == E_Weapon.Knife)
                 {
                     animator.SetLayerWeight(animator.GetLayerIndex("MoveShoot"), 0f);
                 }
@@ -304,6 +306,8 @@ public class Player : MonoBehaviour
     private void Roll()
     {
         StopAllCoroutine();
+        animator.SetLayerWeight(animator.GetLayerIndex("MoveShoot"), 0);
+        animator.SetBool("Attack", false);
         animator.SetBool("Roll", true);
     }
 
@@ -381,15 +385,16 @@ public class Player : MonoBehaviour
             Physics.OverlapSphere(transform.position + transform.forward * 2 + transform.up, 1f, 1 << LayerMask.NameToLayer("Enemy"));
         foreach (Collider enemy in enemies)
         {
-            enemy.GetComponent<Zombie>().Wound(weapon.atk + baseAtk);
+            enemy.GetComponent<Zombie>().Wound(weaponBag.weapon.atk + baseAtk);
         }
 
         animator.SetBool("Attacking", false);
     }
 
+    // 枪射击事件
     public void ShootEvent()
     {
-        if (weapon.nowBulletCount == 0)
+        if (weaponBag.weapon.nowBulletCount == 0)
         {
             return;
         }
@@ -463,7 +468,7 @@ public class Player : MonoBehaviour
                     bullet.transform.rotation = firePos.rotation;
                 });
             }
-            
+
             // 枪口火焰
             GameObject muzzle = PoolManager.Instance.GetObject("Prefabs/Bullet/Muzzle");
             if (muzzle)
@@ -480,10 +485,9 @@ public class Player : MonoBehaviour
                     muzzle.transform.position = firePos.position;
                     muzzle.transform.rotation = firePos.rotation;
                 });
-                
             }
         }
-        
+
         // 开枪射线检测, 朝向准星方向
         if (Physics.Raycast(fireRay, out RaycastHit hitInfo, 1000, 1 << LayerMask.NameToLayer("Enemy") | 1 << LayerMask.NameToLayer("Buildings")))
         {
@@ -504,23 +508,24 @@ public class Player : MonoBehaviour
                     hitEff.transform.rotation = Quaternion.LookRotation(hitInfo.normal);
                 });
             }
+
             // 受伤
-            hitInfo.transform.gameObject.GetComponent<Zombie>()?.Wound(weapon.atk + baseAtk);
+            hitInfo.transform.gameObject.GetComponent<Zombie>()?.Wound(weaponBag.weapon.atk + baseAtk);
         }
 
         // 减少子弹
-        weapon.SubBullet();
+        weaponBag.weapon.SubBullet();
         // 刷新开火图标
         UIManager.Instance.GetPanel<GamePanel>().RefreshBulletImg();
         // 更新面板子弹数
         UpdateInfoToPanel();
-        
+
         // 播放开枪音效
-        if (weapon.type == E_Weapon.HandGun)
+        if (weaponBag.weapon.type == E_Weapon.HandGun)
         {
             MusicManger.Instance.PlaySound("Music/Gun", DataManager.Instance.musicData.soundVolume, false);
         }
-        else if (weapon.type == E_Weapon.MachineGun)
+        else if (weaponBag.weapon.type == E_Weapon.MachineGun)
         {
             machineGunAudioSource.volume = DataManager.Instance.musicData.soundVolume;
             machineGunAudioSource.mute = DataManager.Instance.musicData.soundMute;
@@ -537,41 +542,133 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void EndReloadEvent()
+    // 火箭筒射击事件
+    public void RocketShootEvent()
     {
-        // 主武器
-        if (weapon.type == E_Weapon.MachineGun)
+        if (isCrouch)
         {
-            // 先加回枪里剩下的子弹再重新装填
-            mainBullets += weapon.nowBulletCount;
-            // 所有子弹加起来少于一个弹夹则填装剩下的全部子弹
-            if (mainBullets < weapon.bulletCount)
+            // 起身开火
+            GameObject bullet = PoolManager.Instance.GetObject("Prefabs/Bullet/RocketBullet");
+            if (bullet)
             {
-                weapon.ReLoading(mainBullets);
-                mainBullets = 0;
+                bullet.SetActive(false);
+                bullet.transform.position = rocketCrouchFirePos.position;
+                bullet.transform.rotation = rocketCrouchFirePos.rotation;
+
+
+                Rigidbody rb = bullet.GetComponent<Rigidbody>();
+                rb.velocity = Vector3.zero;
+                rb.AddForce(bullet.transform.forward * 0.1f, ForceMode.Impulse);
+                bullet.SetActive(true);
             }
             else
             {
-                weapon.ReLoading(weapon.bulletCount);
-                mainBullets -= weapon.bulletCount;
+                ResourcesFrameWork.Instance.LoadAsync<GameObject>("Prefabs/Bullet/RocketBullet", resBullet =>
+                {
+                    bullet.SetActive(false);
+                    bullet = Instantiate(resBullet);
+                    bullet.name = "Prefabs/Bullet/RocketBullet";
+                    bullet.transform.position = rocketCrouchFirePos.position;
+                    bullet.transform.rotation = rocketCrouchFirePos.rotation;
+
+                    Rigidbody rb = bullet.GetComponent<Rigidbody>();
+                    rb.velocity = Vector3.zero;
+                    rb.AddForce(bullet.transform.forward * 0.1f, ForceMode.Impulse);
+                    bullet.SetActive(true);
+                });
+            }
+
+            // 枪口火焰
+            GameObject muzzle = PoolManager.Instance.GetObject("Prefabs/Bullet/Muzzle");
+            if (muzzle)
+            {
+                muzzle.transform.position = rocketCrouchFirePos.position;
+                muzzle.transform.rotation = rocketCrouchFirePos.rotation;
+            }
+            else
+            {
+                ResourcesFrameWork.Instance.LoadAsync<GameObject>("Prefabs/Bullet/Muzzle", resMuzzle =>
+                {
+                    muzzle = Instantiate(resMuzzle);
+                    muzzle.name = "Prefabs/Bullet/Muzzle";
+                    muzzle.transform.position = rocketCrouchFirePos.position;
+                    muzzle.transform.rotation = rocketCrouchFirePos.rotation;
+                });
             }
         }
-        // 手枪
         else
         {
-            // 先加回枪里剩下的子弹再重新装填
-            hanGunBullets += weapon.nowBulletCount;
-            // 所有子弹加起来少于一个弹夹则填装剩下的全部子弹
-            if (hanGunBullets < weapon.bulletCount)
+            // 起身开火
+            GameObject bullet = PoolManager.Instance.GetObject("Prefabs/Bullet/RocketBullet");
+            if (bullet)
             {
-                weapon.ReLoading(hanGunBullets);
-                hanGunBullets = 0;
+                bullet.SetActive(false);
+                bullet.transform.position = rocketFirePos.position;
+                bullet.transform.rotation = rocketFirePos.rotation;
+
+
+                Rigidbody rb = bullet.GetComponent<Rigidbody>();
+                rb.velocity = Vector3.zero;
+                rb.AddForce(bullet.transform.forward * 0.1f, ForceMode.Impulse);
+                bullet.SetActive(true);
             }
             else
             {
-                weapon.ReLoading(weapon.bulletCount);
-                hanGunBullets -= weapon.bulletCount;
+                ResourcesFrameWork.Instance.LoadAsync<GameObject>("Prefabs/Bullet/RocketBullet", resBullet =>
+                {
+                    bullet = Instantiate(resBullet);
+                    bullet.name = "Prefabs/Bullet/RocketBullet";
+                    bullet.transform.position = rocketFirePos.position;
+                    bullet.transform.rotation = rocketFirePos.rotation;
+
+                    Rigidbody rb = bullet.GetComponent<Rigidbody>();
+                    rb.velocity = Vector3.zero;
+                    rb.AddForce(bullet.transform.forward * 0.1f, ForceMode.Impulse);
+                    bullet.SetActive(true);
+                });
             }
+
+            // 枪口火焰
+            GameObject muzzle = PoolManager.Instance.GetObject("Prefabs/Bullet/Muzzle");
+            if (muzzle)
+            {
+                muzzle.transform.position = rocketFirePos.position;
+                muzzle.transform.rotation = rocketFirePos.rotation;
+            }
+            else
+            {
+                ResourcesFrameWork.Instance.LoadAsync<GameObject>("Prefabs/Bullet/Muzzle", resMuzzle =>
+                {
+                    muzzle = Instantiate(resMuzzle);
+                    muzzle.name = "Prefabs/Bullet/Muzzle";
+                    muzzle.transform.position = rocketFirePos.position;
+                    muzzle.transform.rotation = rocketFirePos.rotation;
+                });
+            }
+        }
+
+        // 减少子弹
+        weaponBag.weapon.SubBullet();
+        // 刷新开火图标
+        UIManager.Instance.GetPanel<GamePanel>().RefreshBulletImg();
+        // 更新面板子弹数
+        UpdateInfoToPanel();
+    }
+
+    public void EndReloadEvent()
+    {
+        // 先加回枪里剩下的子弹再重新装填
+        weaponBag.spareBullets += weaponBag.weapon.nowBulletCount;
+        // 所有子弹加起来少于一个弹夹则填装剩下的全部子弹
+        if (weaponBag.spareBullets < weaponBag.weapon.bulletCount)
+        {
+            weaponBag.weapon.ReLoading(weaponBag.spareBullets);
+            weaponBag.spareBullets = 0;
+        }
+        else
+        {
+            weaponBag.weapon.ReLoading(weaponBag.weapon.bulletCount);
+            weaponBag.spareBullets -= weaponBag.weapon.bulletCount;
         }
 
         UpdateInfoToPanel();
@@ -605,58 +702,80 @@ public class Player : MonoBehaviour
             weaponIndex = 3;
             ChangeWeapon();
         }
+
+        if (Input.GetKeyDown(KeyCode.G) && weaponIndex != 0)
+        {
+            weaponIndex = 0;
+            ChangeWeapon();
+        }
     }
 
     private void ChangeWeapon()
     {
-        if (weapon)
-        {
-            weapon.gameObject.SetActive(false);
-        }
+        weaponBag?.weapon.gameObject.SetActive(false);
 
         switch (weaponIndex)
         {
-            case 1:
-                // 没有副武器就创建有就取出
-                if (!weaponBag.ContainsKey(1))
+            case 0:
+                if (!weaponBagDic.ContainsKey(0))
                 {
-                    weapon = Instantiate(Resources.Load<GameObject>("Prefabs/Weapon/A"), handPos).GetComponent<Weapon>();
-                    weaponBag.Add(1, weapon.gameObject);
+                    weaponBag = new WeaponBag(DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].rocketLaunchBullets,
+                        Instantiate(Resources.Load<GameObject>("Prefabs/Weapon/RocketLauncher"), handPos).GetComponent<Weapon>());
+                    weaponBagDic.Add(0, weaponBag);
                 }
                 else
                 {
-                    weapon = weaponBag[1].GetComponent<Weapon>();
-                    weapon.gameObject.SetActive(true);
+                    weaponBag = weaponBagDic[0];
+                    weaponBag.weapon.gameObject.SetActive(true);
                 }
 
+                animator.runtimeAnimatorController = Instantiate(Resources.Load<RuntimeAnimatorController>("Animator/Role/RocketLauncher"));
+                break;
+            case 1:
+                // 没有副武器就创建有就取出
+                if (!weaponBagDic.ContainsKey(1))
+                {
+                    // 创建机枪
+                    weaponBag = new WeaponBag(DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].mainBullets,
+                        Instantiate(Resources.Load<GameObject>("Prefabs/Weapon/A"), handPos).GetComponent<Weapon>());
+                    weaponBagDic.Add(1, weaponBag);
+                }
+                else
+                {
+                    // 第一把主武器为枪
+                    weaponBag = weaponBagDic[1];
+                    weaponBag.weapon.gameObject.SetActive(true);
+                }
+                
                 animator.runtimeAnimatorController = Instantiate(Resources.Load<RuntimeAnimatorController>("Animator/Role/MachineGun"));
-
                 break;
             case 2:
                 // 没有副武器就创建有就取出
-                if (!weaponBag.ContainsKey(2))
+                if (!weaponBagDic.ContainsKey(2))
                 {
-                    weapon = Instantiate(Resources.Load<GameObject>("Prefabs/Weapon/weapon_handgun"), handPos).GetComponent<Weapon>();
-                    weaponBag.Add(2, weapon.gameObject);
+                    weaponBag = new WeaponBag(DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].hanGunBullets,
+                        Instantiate(Resources.Load<GameObject>("Prefabs/Weapon/weapon_handgun"), handPos).GetComponent<Weapon>());
+                    weaponBagDic.Add(2, weaponBag);
                 }
                 else
                 {
-                    weapon = weaponBag[2].GetComponent<Weapon>();
-                    weapon.gameObject.SetActive(true);
+                    weaponBag = weaponBagDic[2];
+                    weaponBag.weapon.gameObject.SetActive(true);
                 }
 
                 animator.runtimeAnimatorController = Instantiate(Resources.Load<RuntimeAnimatorController>("Animator/Role/HandGun"));
                 break;
             case 3:
-                if (!weaponBag.ContainsKey(3))
+                if (!weaponBagDic.ContainsKey(3))
                 {
-                    weapon = Instantiate(Resources.Load<GameObject>("Prefabs/Weapon/weapon_knife"), handPos).GetComponent<Weapon>();
-                    weaponBag.Add(3, weapon.gameObject);
+                    weaponBag = new WeaponBag(0,
+                        Instantiate(Resources.Load<GameObject>("Prefabs/Weapon/weapon_knife"), handPos).GetComponent<Weapon>());
+                    weaponBagDic.Add(3, weaponBag);
                 }
                 else
                 {
-                    weapon = weaponBag[3].GetComponent<Weapon>();
-                    weapon.gameObject.SetActive(true);
+                    weaponBag = weaponBagDic[3];
+                    weaponBag.weapon.gameObject.SetActive(true);
                 }
 
                 animator.runtimeAnimatorController = Instantiate(Resources.Load<RuntimeAnimatorController>("Animator/Role/Knife"));
@@ -669,16 +788,16 @@ public class Player : MonoBehaviour
         {
             animator.SetBool("Crouch", true);
         }
+
         // 立刻恢复当前人物移动
         animator.SetFloat("XSpeed", Mathf.Lerp(animator.GetFloat("XSpeed"), xDir, Time.deltaTime * moveSpeed));
         animator.SetFloat("YSpeed", Mathf.Lerp(animator.GetFloat("YSpeed"), yDir, Time.deltaTime * moveSpeed));
 
         if (yDir != 0 || xDir != 0)
         {
-            animator.SetLayerWeight(animator.GetLayerIndex("MoveShoot"), 1);
+            animator.SetLayerWeight(animator.GetLayerIndex("MoveShoot"), 0.5f);
         }
-        
-        
+
         // 其他武器现实子弹数
         UIManager.Instance.GetPanel<GamePanel>().ShowBulletInfo();
         UIManager.Instance.GetPanel<GamePanel>().RefreshBulletImg();
@@ -694,7 +813,7 @@ public class Player : MonoBehaviour
 
     private void UpdateInfoToPanel()
     {
-        UIManager.Instance.GetPanel<GamePanel>()?.UpdateBullet(weapon.nowBulletCount, weapon.type == E_Weapon.HandGun ? hanGunBullets : mainBullets);
+        UIManager.Instance.GetPanel<GamePanel>()?.UpdateBullet(weaponBag.weapon.nowBulletCount, weaponBag.spareBullets);
         UIManager.Instance.GetPanel<GamePanel>()?.UpdatePlayerHp(hp, maxHp);
         UIManager.Instance.GetPanel<GamePanel>()?.UpdateAtk(baseAtk);
     }
@@ -717,18 +836,23 @@ public class Player : MonoBehaviour
 
     public bool RestoreBullet()
     {
-        // 禁止满子弹加子弹
-        if (mainBullets == DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].mainBullets &&
-            hanGunBullets == DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].hanGunBullets)
+        // 默认为false禁止满子弹加子弹
+        bool isRestoreBullet = false;
+        for (int i = 0; i < weaponBagDic.Count; i++)
         {
-            UIManager.Instance.GetPanel<GamePanel>().ShowGameTips("后备弹药已满");
-            return false;
+            if (weaponBagDic.ContainsKey(i))
+            {
+                // 遍历所有武器, 不满子弹的加满
+                if (weaponBagDic[i].spareBullets != weaponBagDic[i].resSpareBullets)
+                {
+                    weaponBagDic[i].spareBullets = weaponBagDic[i].resSpareBullets;
+                    isRestoreBullet = true;
+                }
+            }
         }
 
-        mainBullets = DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].mainBullets;
-        hanGunBullets = DataManager.Instance.roleInfos[DataManager.Instance.nowRoleID].hanGunBullets;
         UpdateInfoToPanel();
-        return true;
+        return isRestoreBullet;
     }
 
     public void AddAtk()
