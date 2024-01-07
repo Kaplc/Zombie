@@ -41,6 +41,10 @@ public class Weapon : MonoBehaviour
     {
         // 子弹-1
         nowBulletCount--;
+        if (nowBulletCount<0)
+        {
+            nowBulletCount = 0;
+        }
     }
     
     public void ReLoading(int count)

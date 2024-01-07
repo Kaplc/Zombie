@@ -51,13 +51,18 @@ public class Tower : MonoBehaviour
         {
             target = zombies[0].transform;
         }
+        else
+        {
+            target = null;
+        }
     }
 
     private void Fire()
     {
-        // 超出距离禁止开火
+        // 超出距离禁止开火, 重新锁敌
         if (Vector3.Distance(target.position, transform.position)>10)
         {
+            FindTarget();
             return;
         }
         

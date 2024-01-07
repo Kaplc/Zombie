@@ -48,7 +48,7 @@ public class RocketBullet : MonoBehaviour
             
             // 范围检测
             Collider[] enemies =
-                Physics.OverlapSphere(transform.position, 4f, 1 << LayerMask.NameToLayer("Enemy"));
+                Physics.OverlapSphere(transform.position, 3f, 1 << LayerMask.NameToLayer("Enemy"));
             foreach (Collider enemy in enemies)
             {
                 enemy.GetComponent<Zombie>().Wound(GameManger.Instance.player.GetComponent<Player>().weaponBag.weapon.atk + GameManger.Instance.player.GetComponent<Player>().baseAtk);
