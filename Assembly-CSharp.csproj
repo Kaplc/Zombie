@@ -192,6 +192,7 @@
      <Compile Include="Assets\Script\GameScene\UI\EndPanel.cs" />
      <Compile Include="Assets\Script\GameScene\UI\ExitPanel.cs" />
      <Compile Include="Assets\Script\GameScene\UI\GamePanel.cs" />
+     <Compile Include="Assets\Script\GameScene\UI\InputSettingPanel.cs" />
      <Compile Include="Assets\Script\GameScene\UI\ItemBtn.cs" />
      <Compile Include="Assets\Script\GameScene\UI\MenuPanel.cs" />
      <Compile Include="Assets\Script\UIManager\BasePanel.cs" />
