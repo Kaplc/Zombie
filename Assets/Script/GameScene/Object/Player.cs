@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Script.FrameWork.MusicManager;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
-using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -20,8 +18,6 @@ public class Player : MonoBehaviour
 
     // 武器相关
     private int weaponIndex;
-
-    // private Weapon weapon;
     public WeaponBag weaponBag;
     public Transform handPos;
     private Dictionary<int, WeaponBag> weaponBagDic;
@@ -44,17 +40,18 @@ public class Player : MonoBehaviour
     private Coroutine addMoveShootWeightCoroutine;
     private Coroutine addReloadShootWeightCoroutine;
     private Coroutine subMoveShootWeightCoroutine;
-
     private Coroutine subReloadShootWeightCoroutine;
 
     // 开枪音效组件
     private AudioSource machineGunAudioSource;
-
     private AudioSource hunGunAudioSource;
 
     // 
     private Vector3 mousePosToWorldPos;
     private Vector3 mousePosToWorldPosForward;
+
+    // 输入系统
+    private InputActions inputActions;
 
     private void Start()
     {
@@ -75,21 +72,261 @@ public class Player : MonoBehaviour
         // 初始化音乐
         machineGunAudioSource = gameObject.AddComponent<AudioSource>();
         machineGunAudioSource.clip = Resources.Load<AudioClip>("Music/Tower");
+        // 启用输入系统
+        inputActions = new InputActions();
+        inputActions.Enable();
+        InputControl();
     }
 
     private void Update()
     {
-        Move();
-
+        // 游戏结束或者打开面板
         if (GameManger.Instance.isGameOver || GameManger.Instance.showMenu)
         {
+            // 停止移动
+            xDir = 0;
+            yDir = 0;
+            animator.SetFloat("XSpeed", Mathf.Lerp(animator.GetFloat("XSpeed"), xDir, Time.deltaTime * moveSpeed));
+            animator.SetFloat("YSpeed", Mathf.Lerp(animator.GetFloat("YSpeed"), yDir, Time.deltaTime * moveSpeed));
+            // 停止攻击
             animator.SetBool("Attack", false);
             return;
         }
 
-        // 读取数字键换武器
-        GetKeyNumToChangeWeapon();
+        // 镜头随人物旋转
+        transform.rotation *= Quaternion.Euler(transform.up * Input.GetAxis("Mouse X"));
 
+        // 任意方向移动时切换为移动攻击层：不在roll时切换
+        if ((xDir != 0 || yDir != 0) && !animator.GetBool("Reloading") && !animator.GetBool("Roll"))
+        {
+            StopAllCoroutine();
+            if (weaponBag.weapon.type != E_Weapon.Knife)
+            {
+                subReloadShootWeightCoroutine = StartCoroutine(SubWeight("MoveReload"));
+            }
+
+            addMoveShootWeightCoroutine = StartCoroutine(AddWeight("MoveShoot"));
+        }
+        // 移动装弹层：不在roll时切换
+        else if ((xDir != 0 || yDir != 0) && animator.GetBool("Reloading") && !animator.GetBool("Roll"))
+        {
+            StopAllCoroutine();
+            subMoveShootWeightCoroutine = StartCoroutine(SubWeight("MoveShoot"));
+            if (weaponBag.weapon.type != E_Weapon.Knife)
+            {
+                addReloadShootWeightCoroutine = StartCoroutine(AddWeight("MoveReload"));
+            }
+        }
+        // 停下攻击层： roll或者停下时切换
+        else if (xDir == 0 && yDir == 0 || animator.GetBool("Roll"))
+        {
+            // 装弹时不能滚
+            if (!animator.GetBool("Reloading"))
+            {
+                StopAllCoroutine();
+                if (weaponBag.weapon.type == E_Weapon.Knife)
+                {
+                    animator.SetLayerWeight(animator.GetLayerIndex("MoveShoot"), 0f);
+                }
+                else
+                {
+                    subMoveShootWeightCoroutine = StartCoroutine(SubWeight("MoveShoot"));
+                    subReloadShootWeightCoroutine = StartCoroutine(SubWeight("MoveReload"));
+                }
+            }
+        }
+        
+        // 人物移动
+        animator.SetFloat("XSpeed", Mathf.Lerp(animator.GetFloat("XSpeed"), xDir, Time.deltaTime * moveSpeed));
+        animator.SetFloat("YSpeed", Mathf.Lerp(animator.GetFloat("YSpeed"), yDir, Time.deltaTime * moveSpeed));
+
+        // 手动装弹
+        // if (Input.GetKeyDown(KeyCode.R) && weaponBag.weapon.nowBulletCount != weaponBag.weapon.bulletCount)
+        // {
+        //     // 当前武器有后备子弹才能重新装填
+        //     if (weaponBag.spareBullets > 0)
+        //     {
+        //         animator.SetBool("Reloading", true);
+        //     }
+        // }
+    }
+
+    private void OnDestroy()
+    {
+        if (inputActions != null && inputActions.Player.enabled)
+        {
+            inputActions.Player.Disable();
+        }
+    }
+
+    #region 输入控制
+
+    private void InputControl()
+    {
+        // 读取数字键换武器
+        InputChangeWeapon();
+        // 移动相关
+        InputMove();
+    }
+
+    private void InputMove()
+    {
+        // 横向
+        inputActions.Player.MoveHorizen.performed += context =>
+        {
+            if (GameManger.Instance.isGameOver || GameManger.Instance.showMenu)
+            {
+                xDir = 0;
+                return;
+            }
+
+            xDir = context.ReadValue<float>();
+            
+            // s后退时左右移动
+            if (yDir < 0)
+            {
+                // 限制状态树的参数范围
+                if (xDir > 0)
+                    xDir = Mathf.Clamp(xDir, 0f, 0.5f);
+
+                if (xDir < 0)
+                    xDir = Mathf.Clamp(xDir, -0.5f, 0f);
+            }
+        };
+        inputActions.Player.MoveHorizen.canceled += context => { xDir = context.ReadValue<float>(); };
+
+        // 竖向
+        inputActions.Player.MoveVertical.performed += context =>
+        {
+            if (GameManger.Instance.isGameOver || GameManger.Instance.showMenu)
+            {
+                yDir = 0;
+                return;
+            }
+            
+            yDir = context.ReadValue<float>();
+        };
+        inputActions.Player.MoveVertical.canceled += context =>
+        {
+            yDir = context.ReadValue<float>();
+            
+        };
+
+        // 按下shift跑动
+        inputActions.Player.Run.performed += context => Run();
+        inputActions.Player.Run.canceled += context => CancelRun();
+        // 蹲下
+        inputActions.Player.Crouch.performed += context => Crouch();
+        // 翻滚
+        inputActions.Player.Roll.performed += context => Roll();
+        // 换子弹
+        inputActions.Player.Reloading.performed += context => Reloading();
+
+        inputActions.Player.Fire.performed += context => Fire();
+        inputActions.Player.Fire.canceled += context =>
+        {
+            animator.SetBool("Attack", false);
+        };
+
+        #region 旧输入系统
+
+        // yDir = Input.GetAxis("Vertical");
+        // xDir = Input.GetAxis("Horizontal");
+        //
+        // // 按下shift跑动
+        // if (Input.GetKey(KeyCode.LeftShift))
+        // {
+        //     // 在后退时不能跑动
+        //     if (yDir > 0) yDir += 1;
+        //     if (xDir > 0) xDir += 1;
+        //     if (xDir < 0) xDir -= 1;
+        // }
+        //
+        // // s后退时左右移动
+        // if (yDir < 0)
+        // {
+        //     // 限制状态树的参数范围
+        //     if (xDir > 0)
+        //         xDir = Mathf.Clamp(xDir, 0f, 0.5f);
+        //
+        //     if (xDir < 0)
+        //         xDir = Mathf.Clamp(xDir, -0.5f, 0f);
+        // }
+        //
+        // // 按下c蹲下
+        // if (Input.GetKeyDown(KeyCode.C))
+        // {
+        //     Crouch();
+        // }
+        //
+        // // 按x翻滚: 在装弹和攻击时无效
+        // if (Input.GetKeyDown(KeyCode.X) && !animator.GetBool("Reloading"))
+        // {
+        //     Roll();
+        // }
+        //
+        // // 游戏结束或者打开面板停止移动
+        // if (GameManger.Instance.isGameOver || GameManger.Instance.showMenu)
+        // {
+        //     xDir = 0;
+        //     yDir = 0;
+        // }
+        // else
+        // {
+        //     // 镜头随人物旋转
+        //     transform.rotation *= Quaternion.Euler(transform.up * Input.GetAxis("Mouse X"));
+        // }
+        //
+        // // 任意方向移动时切换为移动攻击层：不在roll时切换
+        // if ((xDir != 0 || yDir != 0) && !animator.GetBool("Reloading") && !animator.GetBool("Roll"))
+        // {
+        //     StopAllCoroutine();
+        //     if (weaponBag.weapon.type != E_Weapon.Knife)
+        //     {
+        //         subReloadShootWeightCoroutine = StartCoroutine(SubWeight("MoveReload"));
+        //     }
+        //
+        //     addMoveShootWeightCoroutine = StartCoroutine(AddWeight("MoveShoot"));
+        // }
+        // // 移动装弹层：不在roll时切换
+        // else if ((xDir != 0 || yDir != 0) && animator.GetBool("Reloading") && !animator.GetBool("Roll"))
+        // {
+        //     StopAllCoroutine();
+        //     subMoveShootWeightCoroutine = StartCoroutine(SubWeight("MoveShoot"));
+        //     if (weaponBag.weapon.type != E_Weapon.Knife)
+        //     {
+        //         addReloadShootWeightCoroutine = StartCoroutine(AddWeight("MoveReload"));
+        //     }
+        // }
+        // // 停下攻击层： roll或者停下时切换
+        // else if (xDir == 0 && yDir == 0 || animator.GetBool("Roll"))
+        // {
+        //     // 装弹时不能滚
+        //     if (!animator.GetBool("Reloading"))
+        //     {
+        //         StopAllCoroutine();
+        //         if (weaponBag.weapon.type == E_Weapon.Knife)
+        //         {
+        //             animator.SetLayerWeight(animator.GetLayerIndex("MoveShoot"), 0f);
+        //         }
+        //         else
+        //         {
+        //             subMoveShootWeightCoroutine = StartCoroutine(SubWeight("MoveShoot"));
+        //             subReloadShootWeightCoroutine = StartCoroutine(SubWeight("MoveReload"));
+        //         }
+        //     }
+        // }
+        //
+        //
+        // // 人物移动
+        // animator.SetFloat("XSpeed", Mathf.Lerp(animator.GetFloat("XSpeed"), xDir, Time.deltaTime * moveSpeed));
+        // animator.SetFloat("YSpeed", Mathf.Lerp(animator.GetFloat("YSpeed"), yDir, Time.deltaTime * moveSpeed));
+
+        #endregion
+    }
+
+    private void Fire()
+    {
         // 攻击
         switch (weaponBag.weapon.type)
         {
@@ -158,9 +395,12 @@ public class Player : MonoBehaviour
 
                 break;
         }
+    }
 
+    private void Reloading()
+    {
         // 手动装弹
-        if (Input.GetKeyDown(KeyCode.R) && weaponBag.weapon.nowBulletCount != weaponBag.weapon.bulletCount)
+        if (weaponBag.weapon.nowBulletCount != weaponBag.weapon.bulletCount)
         {
             // 当前武器有后备子弹才能重新装填
             if (weaponBag.spareBullets > 0)
@@ -169,6 +409,41 @@ public class Player : MonoBehaviour
             }
         }
     }
+
+    private void CancelRun()
+    {
+        if (yDir > 1)yDir -= 1;
+        if (xDir > 1) xDir -= 1;
+        if (xDir < -1) xDir += 1;
+    }
+
+    private void Run()
+    {
+        // 在后退时不能跑动
+        if (yDir > 0) yDir += 1;
+        if (xDir > 0) xDir += 1;
+        if (xDir < 0) xDir -= 1;
+    }
+
+    private void Crouch()
+    {
+        isCrouch = !isCrouch;
+        animator.SetBool("Crouch", isCrouch);
+    }
+
+    private void Roll()
+    {
+        // 在装弹和攻击时无效
+        if (animator.GetBool("Reloading")) return;
+
+        StopAllCoroutine();
+        animator.SetLayerWeight(animator.GetLayerIndex("MoveShoot"), 0);
+        animator.SetBool("Attack", false);
+        animator.SetBool("Roll", true);
+    }
+
+    #endregion
+
 
     private void Attack()
     {
@@ -199,119 +474,6 @@ public class Player : MonoBehaviour
 
         UpdateInfoToPanel();
     }
-
-    #region 手枪和刀动作
-
-    private void Move()
-    {
-        yDir = Input.GetAxis("Vertical");
-        xDir = Input.GetAxis("Horizontal");
-
-        // 按下shift跑动
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            // 在后退时不能跑动
-            if (yDir > 0) yDir += 1;
-            if (xDir > 0) xDir += 1;
-            if (xDir < 0) xDir -= 1;
-        }
-
-        // s后退时左右移动
-        if (yDir < 0)
-        {
-            // 限制状态树的参数范围
-            if (xDir > 0)
-                xDir = Mathf.Clamp(xDir, 0f, 0.5f);
-
-            if (xDir < 0)
-                xDir = Mathf.Clamp(xDir, -0.5f, 0f);
-        }
-
-        // 按下c蹲下
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            Crouch();
-        }
-
-        // 按x翻滚: 在装弹和攻击时无效
-        if (Input.GetKeyDown(KeyCode.X) && !animator.GetBool("Reloading"))
-        {
-            Roll();
-        }
-
-        // 游戏结束或者打开面板停止移动
-        if (GameManger.Instance.isGameOver || GameManger.Instance.showMenu)
-        {
-            xDir = 0;
-            yDir = 0;
-        }
-        else
-        {
-            // 镜头随人物旋转
-            transform.rotation *= Quaternion.Euler(transform.up * Input.GetAxis("Mouse X"));
-        }
-
-        // 任意方向移动时切换为移动攻击层：不在roll时切换
-        if ((xDir != 0 || yDir != 0) && !animator.GetBool("Reloading") && !animator.GetBool("Roll"))
-        {
-            StopAllCoroutine();
-            if (weaponBag.weapon.type != E_Weapon.Knife)
-            {
-                subReloadShootWeightCoroutine = StartCoroutine(SubWeight("MoveReload"));
-            }
-
-            addMoveShootWeightCoroutine = StartCoroutine(AddWeight("MoveShoot"));
-        }
-        // 移动装弹层：不在roll时切换
-        else if ((xDir != 0 || yDir != 0) && animator.GetBool("Reloading") && !animator.GetBool("Roll"))
-        {
-            StopAllCoroutine();
-            subMoveShootWeightCoroutine = StartCoroutine(SubWeight("MoveShoot"));
-            if (weaponBag.weapon.type != E_Weapon.Knife)
-            {
-                addReloadShootWeightCoroutine = StartCoroutine(AddWeight("MoveReload"));
-            }
-        }
-        // 停下攻击层： roll或者停下时切换
-        else if (xDir == 0 && yDir == 0 || animator.GetBool("Roll"))
-        {
-            // 装弹时不能滚
-            if (!animator.GetBool("Reloading"))
-            {
-                StopAllCoroutine();
-                if (weaponBag.weapon.type == E_Weapon.Knife)
-                {
-                    animator.SetLayerWeight(animator.GetLayerIndex("MoveShoot"), 0f);
-                }
-                else
-                {
-                    subMoveShootWeightCoroutine = StartCoroutine(SubWeight("MoveShoot"));
-                    subReloadShootWeightCoroutine = StartCoroutine(SubWeight("MoveReload"));
-                }
-            }
-        }
-
-
-        // 人物移动
-        animator.SetFloat("XSpeed", Mathf.Lerp(animator.GetFloat("XSpeed"), xDir, Time.deltaTime * moveSpeed));
-        animator.SetFloat("YSpeed", Mathf.Lerp(animator.GetFloat("YSpeed"), yDir, Time.deltaTime * moveSpeed));
-    }
-
-    private void Crouch()
-    {
-        isCrouch = !isCrouch;
-        animator.SetBool("Crouch", isCrouch);
-    }
-
-    private void Roll()
-    {
-        StopAllCoroutine();
-        animator.SetLayerWeight(animator.GetLayerIndex("MoveShoot"), 0);
-        animator.SetBool("Attack", false);
-        animator.SetBool("Roll", true);
-    }
-
-    #endregion
 
     #region 动作过度相关
 
@@ -679,35 +841,73 @@ public class Player : MonoBehaviour
 
     #region 换武器
 
-    private void GetKeyNumToChangeWeapon()
+    private void InputChangeWeapon()
     {
-        // 数字键
-        if (Input.GetKeyDown(KeyCode.Alpha1) && weaponIndex != 1)
+        // 1
+        inputActions.Player.ChangeWeapon1.performed += context =>
         {
-            weaponIndex = 1;
-            // 主武器
-            ChangeWeapon();
-        }
+            if (weaponIndex != 1)
+            {
+                weaponIndex = 1;
+                ChangeWeapon();
+            }
+        };
 
-        if (Input.GetKeyDown(KeyCode.Alpha2) && weaponIndex != 2)
+        // 2
+        inputActions.Player.ChangeWeapon2.performed += context =>
         {
-            // 副武器
-            weaponIndex = 2;
-            ChangeWeapon();
-        }
+            if (weaponIndex != 2)
+            {
+                weaponIndex = 2;
+                ChangeWeapon();
+            }
+        };
 
-        if (Input.GetKeyDown(KeyCode.Alpha3) && weaponIndex != 3)
+        // 3
+        inputActions.Player.ChangeWeapon3.performed += context =>
         {
-            // 近战武器
-            weaponIndex = 3;
-            ChangeWeapon();
-        }
+            if (weaponIndex != 3)
+            {
+                weaponIndex = 3;
+                ChangeWeapon();
+            }
+        };
 
-        if (Input.GetKeyDown(KeyCode.G) && weaponIndex != 0)
+        inputActions.Player.UsingSpecialWeapon.performed += context =>
         {
-            weaponIndex = 0;
-            ChangeWeapon();
-        }
+            if (weaponIndex != 0)
+            {
+                weaponIndex = 0;
+                ChangeWeapon();
+            }
+        };
+
+        //
+        // if (Input.GetKeyDown(KeyCode.Alpha1) && weaponIndex != 1)
+        // {
+        //     weaponIndex = 1;
+        //     // 主武器
+        //     ChangeWeapon();
+        // }
+        //
+        // if (Input.GetKeyDown(KeyCode.Alpha2) && weaponIndex != 2)
+        // {
+        //     // 副武器
+        //     weaponIndex = 2;
+        //     ChangeWeapon();
+        // }
+        //
+        // if (Input.GetKeyDown(KeyCode.Alpha3) && weaponIndex != 3)
+        // {
+        //     weaponIndex = 3;
+        //     ChangeWeapon();
+        // }
+
+        // if (Input.GetKeyDown(KeyCode.G) && weaponIndex != 0)
+        // {
+        //     weaponIndex = 0;
+        //     ChangeWeapon();
+        // }
     }
 
     private void ChangeWeapon()
@@ -746,7 +946,7 @@ public class Player : MonoBehaviour
                     weaponBag = weaponBagDic[1];
                     weaponBag.weapon.gameObject.SetActive(true);
                 }
-                
+
                 animator.runtimeAnimatorController = Instantiate(Resources.Load<RuntimeAnimatorController>("Animator/Role/MachineGun"));
                 break;
             case 2:

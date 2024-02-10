@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class SettingPanel : BasePanel
 {
     public Button btnClose;
+    public Button btnInputSetting;
     public Toggle tgMusic;
     public Toggle tgSound;
     public Slider sldMusic;
@@ -18,6 +19,10 @@ public class SettingPanel : BasePanel
         {
             UIManager.Instance.Hide<SettingPanel>(true, null);
             DataManager.Instance.SaveMusicData();
+        });
+        btnClose.onClick.AddListener(() =>
+        {
+            UIManager.Instance.Hide<InputSettingPanel>();
         });
         tgMusic.onValueChanged.AddListener((isOn) =>
         {

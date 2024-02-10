@@ -26,6 +26,7 @@ public class GameManger: MonoBehaviour
     public bool showMenu;
 
     public CameraFollow cameraFollow;
+    private InputActions inputActions;
     
     private void Awake()
     {
@@ -68,9 +69,10 @@ public class GameManger: MonoBehaviour
         UIManager.Instance.GetPanel<GamePanel>().UpdateGameMoney(money);
         
         Invoke("SetPlayerPos", 0.5f);
-        
-        
-        EventCenter.Instance.AddEventListener(KeyCode.Escape+"按下", () =>
+
+        inputActions = new InputActions();
+        inputActions.Player.Menu.Enable();
+        inputActions.Player.Menu.performed += context =>
         {
             if (!isGameOver)
             {
@@ -92,7 +94,31 @@ public class GameManger: MonoBehaviour
                     UIManager.Instance.Hide<SettingPanel>();
                 }
             }
-        });
+        };
+
+        // EventCenter.Instance.AddEventListener(KeyCode.Escape+"按下", () =>
+        // {
+        //     if (!isGameOver)
+        //     {
+        //         showMenu = !showMenu;
+        //     
+        //         // 按一下打开
+        //         if (showMenu)
+        //         {
+        //             Cursor.lockState = CursorLockMode.None;
+        //             Cursor.visible = true;
+        //             UIManager.Instance.Show<MenuPanel>();
+        //         }
+        //         else // 第二下关闭
+        //         {
+        //             Cursor.lockState = CursorLockMode.Locked;
+        //             Cursor.visible = false;
+        //             UIManager.Instance.Hide<MenuPanel>();
+        //             UIManager.Instance.Hide<ExitPanel>();
+        //             UIManager.Instance.Hide<SettingPanel>();
+        //         }
+        //     }
+        // });
     }
      
     private void OnDestroy()

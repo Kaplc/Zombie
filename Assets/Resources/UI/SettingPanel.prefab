@@ -1225,6 +1225,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fadeSpeed: 5
   btnClose: {fileID: 4800544383081419834}
+  btnInputSetting: {fileID: 2128282067818872316}
   tgMusic: {fileID: 4800544382820066565}
   tgSound: {fileID: 4800544383323359340}
   sldMusic: {fileID: 4800544384760290525}
