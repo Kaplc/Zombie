@@ -70,7 +70,7 @@ public class GameManger: MonoBehaviour
         
         Invoke("SetPlayerPos", 0.5f);
 
-        inputActions = new InputActions();
+        inputActions = NewInputManager.Instance.InputActions;
         inputActions.Player.Menu.Enable();
         inputActions.Player.Menu.performed += context =>
         {

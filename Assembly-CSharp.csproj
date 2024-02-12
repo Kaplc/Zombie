@@ -148,6 +148,8 @@
      <Compile Include="Assets\Script\BeginScene\UI\BeginScene\ChooseMapPanel.cs" />
      <Compile Include="Assets\Script\BeginScene\UI\BeginScene\ChooseRolePanel.cs" />
      <Compile Include="Assets\Script\BeginScene\UI\BeginScene\SettingPanel.cs" />
+     <Compile Include="Assets\Script\BeginScene\UI\InputSettingControl.cs" />
+     <Compile Include="Assets\Script\BeginScene\UI\InputSettingPanel.cs" />
      <Compile Include="Assets\Script\BeginScene\UI\LoadingPanel.cs" />
      <Compile Include="Assets\Script\BeginScene\UI\TipsPanel.cs" />
      <Compile Include="Assets\Script\Data\DataManager.cs" />
@@ -173,6 +175,8 @@
      <Compile Include="Assets\Script\FrameWork\InputManager\InputManger.cs" />
      <Compile Include="Assets\Script\FrameWork\MonoManager\MonoManager.cs" />
      <Compile Include="Assets\Script\FrameWork\MusicManager\MusicManger.cs" />
+     <Compile Include="Assets\Script\FrameWork\NewInputManager\InputInfo.cs" />
+     <Compile Include="Assets\Script\FrameWork\NewInputManager\NewInputManager.cs" />
      <Compile Include="Assets\Script\FrameWork\Pool\PoolManager.cs" />
      <Compile Include="Assets\Script\FrameWork\ResourcesLoad\ResourcesFrameWork.cs" />
      <Compile Include="Assets\Script\FrameWork\SceneManager\SceneManagerFrameWork.cs" />
@@ -193,8 +197,6 @@
      <Compile Include="Assets\Script\GameScene\UI\EndPanel.cs" />
      <Compile Include="Assets\Script\GameScene\UI\ExitPanel.cs" />
      <Compile Include="Assets\Script\GameScene\UI\GamePanel.cs" />
-     <Compile Include="Assets\Script\GameScene\UI\InputSettingControl.cs" />
-     <Compile Include="Assets\Script\GameScene\UI\InputSettingPanel.cs" />
      <Compile Include="Assets\Script\GameScene\UI\ItemBtn.cs" />
      <Compile Include="Assets\Script\GameScene\UI\MenuPanel.cs" />
      <Compile Include="Assets\Script\UIManager\BasePanel.cs" />

@@ -44,6 +44,10 @@ public class SettingPanel : BasePanel
             MusicManger.Instance.ChangeSoundVolume(value);
             DataManager.Instance.musicData.soundVolume = value;
         });
+        btnInputSetting.onClick.AddListener(() =>
+        {
+            UIManager.Instance.Show<InputSettingPanel>();
+        });
 
         // 初始化数据
         sldMusic.value = DataManager.Instance.musicData.musicVolume;

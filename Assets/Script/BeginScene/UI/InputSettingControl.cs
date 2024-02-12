@@ -14,6 +14,9 @@ public class InputSettingControl : MonoBehaviour
         btnChange = GetComponentInChildren<Button>();
         txInfo = transform.Find("TextInfo").GetComponent<Text>();
     }
-    
-    
+
+    public void UpdateInfo(string text)
+    {
+        txInfo.text = text;
+    }
 }

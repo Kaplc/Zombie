@@ -17,305 +17,11 @@ using UnityEngine.InputSystem.Utilities;
 
 public partial class @InputActions : IInputActionCollection2, IDisposable
 {
-    public InputActionAsset asset { get; }
-    public @InputActions()
+    public InputActionAsset asset { get;}
+
+    public @InputActions(string json)
     {
-        asset = InputActionAsset.FromJson(@"{
-    ""name"": ""InputActions"",
-    ""maps"": [
-        {
-            ""name"": ""Player"",
-            ""id"": ""6d653ec8-91da-47ec-bb66-6dad5da76fc5"",
-            ""actions"": [
-                {
-                    ""name"": ""ChangeWeapon1"",
-                    ""type"": ""Button"",
-                    ""id"": ""f7048f9a-621a-474c-9a66-92ec9899514a"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""ChangeWeapon2"",
-                    ""type"": ""Button"",
-                    ""id"": ""ece0d6f0-3ec4-44a7-a3e8-bb54130f17de"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""ChangeWeapon3"",
-                    ""type"": ""Button"",
-                    ""id"": ""97d7ba4a-489e-4593-8eda-ed5b59c69432"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""UsingSpecialWeapon"",
-                    ""type"": ""Button"",
-                    ""id"": ""80c0f0fc-2ac8-4e7b-9402-1786eacce582"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""MoveHorizen"",
-                    ""type"": ""Value"",
-                    ""id"": ""38cd7d66-7a0f-4c05-ae48-d74b2d31d6bf"",
-                    ""expectedControlType"": ""Axis"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""MoveVertical"",
-                    ""type"": ""Value"",
-                    ""id"": ""502c6afb-bb1a-4d8b-9544-edb96ec21ec7"",
-                    ""expectedControlType"": ""Axis"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""New action"",
-                    ""type"": ""Button"",
-                    ""id"": ""c0cd21d8-a20e-4b05-8047-25daef3b3a5f"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Run"",
-                    ""type"": ""Button"",
-                    ""id"": ""1a8760ab-37af-4e7d-9fa8-4efe4a5d7b9a"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Crouch"",
-                    ""type"": ""Button"",
-                    ""id"": ""96a95212-2cbe-4f1e-a3bd-11c78173ead7"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Roll"",
-                    ""type"": ""Button"",
-                    ""id"": ""37d060fd-5d38-4a24-8ba3-27314864af29"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Reloading"",
-                    ""type"": ""Button"",
-                    ""id"": ""7187fa6d-406a-432c-b3b3-f7e9bc9a17fb"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Fire"",
-                    ""type"": ""Button"",
-                    ""id"": ""66eef102-711d-441d-983b-3ea8f2787080"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": ""Press"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Menu"",
-                    ""type"": ""Button"",
-                    ""id"": ""3840fb24-4ba4-492c-b9a4-d92660882184"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""86ff8ec3-90b0-4dd4-b2b2-7bb3026699cd"",
-                    ""path"": ""<Keyboard>/1"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ChangeWeapon1"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""3b048141-f289-4f45-8cb8-28c34c59516d"",
-                    ""path"": ""<Keyboard>/a"",
-                    ""interactions"": """",
-                    ""processors"": ""Invert"",
-                    ""groups"": """",
-                    ""action"": ""MoveHorizen"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""5e61967e-4b6e-498f-bc19-1c2d2e128494"",
-                    ""path"": ""<Keyboard>/d"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""MoveHorizen"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""9313baa2-45de-4695-aeff-37777e299fc9"",
-                    ""path"": ""<Keyboard>/2"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ChangeWeapon2"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""0399c5a2-ec56-44c8-8194-2c9270e93f12"",
-                    ""path"": ""<Keyboard>/3"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ChangeWeapon3"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""64da2a5d-b165-4c5f-a0eb-9f38dbc43b06"",
-                    ""path"": ""<Keyboard>/g"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""UsingSpecialWeapon"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""da815647-efd3-4df2-a219-9b4416459421"",
-                    ""path"": ""<Keyboard>/w"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""MoveVertical"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""7ffb10d5-987f-454f-8c42-5f77ee2cbd90"",
-                    ""path"": ""<Keyboard>/s"",
-                    ""interactions"": """",
-                    ""processors"": ""Invert"",
-                    ""groups"": """",
-                    ""action"": ""MoveVertical"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""fd29c409-7dbc-4d52-bbf4-350d6ffafa60"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""New action"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""89a05c78-fd3b-45bd-ace3-fdd5dbffdd4a"",
-                    ""path"": ""<Keyboard>/leftShift"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Run"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""b3cec623-9fd2-499f-9f76-2a7cd45a8bdd"",
-                    ""path"": ""<Keyboard>/c"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Crouch"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""e4ab7cd8-2b21-436b-bc8a-1edee7f418b1"",
-                    ""path"": ""<Keyboard>/x"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Roll"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""59c0cd7c-288d-479c-b677-0f847457d0f5"",
-                    ""path"": ""<Keyboard>/r"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Reloading"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""73dbce18-2e68-4615-85e8-a80faf59b4b1"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Fire"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""9c87ae31-3006-467b-9c47-c5e250a70cf7"",
-                    ""path"": ""<Keyboard>/escape"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Menu"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                }
-            ]
-        }
-    ],
-    ""controlSchemes"": []
-}");
+        asset = InputActionAsset.FromJson(json);
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_ChangeWeapon1 = m_Player.FindAction("ChangeWeapon1", throwIfNotFound: true);
@@ -331,6 +37,7 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
         m_Player_Reloading = m_Player.FindAction("Reloading", throwIfNotFound: true);
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
         m_Player_Menu = m_Player.FindAction("Menu", throwIfNotFound: true);
+        m_Player_Newaction1 = m_Player.FindAction("New action1", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -403,6 +110,7 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Reloading;
     private readonly InputAction m_Player_Fire;
     private readonly InputAction m_Player_Menu;
+    private readonly InputAction m_Player_Newaction1;
     public struct PlayerActions
     {
         private @InputActions m_Wrapper;
@@ -420,6 +128,7 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
         public InputAction @Reloading => m_Wrapper.m_Player_Reloading;
         public InputAction @Fire => m_Wrapper.m_Player_Fire;
         public InputAction @Menu => m_Wrapper.m_Player_Menu;
+        public InputAction @Newaction1 => m_Wrapper.m_Player_Newaction1;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -468,6 +177,9 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                 @Menu.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMenu;
                 @Menu.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMenu;
                 @Menu.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMenu;
+                @Newaction1.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNewaction1;
+                @Newaction1.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNewaction1;
+                @Newaction1.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNewaction1;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -511,6 +223,9 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                 @Menu.started += instance.OnMenu;
                 @Menu.performed += instance.OnMenu;
                 @Menu.canceled += instance.OnMenu;
+                @Newaction1.started += instance.OnNewaction1;
+                @Newaction1.performed += instance.OnNewaction1;
+                @Newaction1.canceled += instance.OnNewaction1;
             }
         }
     }
@@ -530,5 +245,6 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
         void OnReloading(InputAction.CallbackContext context);
         void OnFire(InputAction.CallbackContext context);
         void OnMenu(InputAction.CallbackContext context);
+        void OnNewaction1(InputAction.CallbackContext context);
     }
 }

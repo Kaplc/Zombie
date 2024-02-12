@@ -29,7 +29,7 @@ public class JsonManager
     /// <param name="fileName">文件名</param>
     /// <param name="data">数据对象</param>
     /// <param name="toolType">默认使用LitJson</param>
-    public void Save(string fileName, object data, E_JsonTool toolType)
+    public void Save(string fileName, object data, E_JsonTool toolType = E_JsonTool.LitJson)
     {
         string path = Application.persistentDataPath + "/" + fileName + ".json";
         string json = "";
@@ -47,7 +47,7 @@ public class JsonManager
         File.WriteAllText(path, json);
     }
 
-    public T Load<T>(string fileName, E_JsonTool toolType) where T : new()
+    public T Load<T>(string fileName, E_JsonTool toolType = E_JsonTool.LitJson) where T : new()
     {
         string path = Application.streamingAssetsPath + "/" + fileName + ".json";
 

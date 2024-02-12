@@ -73,7 +73,7 @@ public class Player : MonoBehaviour
         machineGunAudioSource = gameObject.AddComponent<AudioSource>();
         machineGunAudioSource.clip = Resources.Load<AudioClip>("Music/Tower");
         // 启用输入系统
-        inputActions = new InputActions();
+        inputActions = NewInputManager.Instance.InputActions;
         inputActions.Enable();
         InputControl();
     }
